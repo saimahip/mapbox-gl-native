@@ -1197,7 +1197,6 @@ public:
 {
     MGLLogDebug(@"Setting contentInset: %@", NSStringFromUIEdgeInsets(contentInset));
     [self setContentInset:contentInset animated:NO];
-    [self installConstraints];
 }
 
 - (void)setContentInset:(UIEdgeInsets)contentInset animated:(BOOL)animated
@@ -1226,7 +1225,7 @@ public:
     }
 
     // Compass, logo and attribution button constraints needs to be updated.
-    [self setNeedsUpdateConstraints];
+    [self installConstraints];
 }
 
 /// Returns the frame of inset content within the map view.
@@ -6565,7 +6564,7 @@ public:
     if ( ! self.scaleBar.hidden)
     {
         [(MGLScaleBar *)self.scaleBar setMetersPerPoint:[self metersPerPointAtLatitude:self.centerCoordinate.latitude]];
-        [self setNeedsUpdateConstraints];
+        [self installScaleBarConstraints];
     }
 }
 
