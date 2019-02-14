@@ -17,7 +17,6 @@
 #include <mbgl/util/exception.hpp>
 #include <mbgl/util/mapbox.hpp>
 #include <mbgl/util/tile_coordinate.hpp>
-#include <mbgl/actor/scheduler.hpp>
 #include <mbgl/util/logging.hpp>
 #include <mbgl/math/log2.hpp>
 
@@ -32,7 +31,6 @@ Map::Map(RendererFrontend& rendererFrontend,
          const Size size,
          const float pixelRatio,
          FileSource& fileSource,
-         Scheduler& scheduler,
          MapMode mapMode,
          ConstrainMode constrainMode,
          ViewportMode viewportMode,
@@ -41,7 +39,6 @@ Map::Map(RendererFrontend& rendererFrontend,
                                   rendererFrontend,
                                   mapObserver,
                                   fileSource,
-                                  scheduler,
                                   size,
                                   pixelRatio,
                                   mapMode,
