@@ -53,7 +53,7 @@ public class LocationPulsingCircleActivity extends AppCompatActivity implements 
 
   private static final float DEFAULT_LOCATION_CIRCLE_PULSE_ALPHA = .4f;
   private static final String DEFAULT_LOCATION_CIRCLE_INTERPOLATOR_PULSE_MODE = PulseMode.DECELERATE;
-  private static final boolean DEFAULT_LOCATION_CIRCLE_PULSE_FADE_MODE = false;
+  private static final boolean DEFAULT_LOCATION_CIRCLE_PULSE_FADE_MODE = true;
 
   private static int DEFAULT_LOCATION_CIRCLE_PULSE_COLOR;
 
