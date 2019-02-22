@@ -788,7 +788,26 @@ void Map::Impl::onStyleLoaded() {
 }
 
 void Map::Impl::onStyleError(std::exception_ptr error) {
-    observer.onDidFailLoadingMap(error);
+    MapLoadError type;
+    std::string description;
+
+    try {
+        std::rethrow_exception(error);
+    } catch (const mbgl::util::StyleParseException& e) {
+        type = MapLoadError::StyleParseError;
+        description = e.what();
+    } catch (const mbgl::util::StyleLoadException& e) {
+        type = MapLoadError::StyleLoadError;
+        description = e.what();
+    } catch (const mbgl::util::NotFoundException& e) {
+        type = MapLoadError::NotFoundError;
+        description = e.what();
+    } catch (const std::exception& e) {
+        type = MapLoadError::UnknownError;
+        description = e.what();
+    }
+
+    observer.onDidFailLoadingMap(type, description);
 }
 
 void Map::Impl::onResourceError(std::exception_ptr error) {
