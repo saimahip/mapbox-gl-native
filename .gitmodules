@@ -91,3 +91,6 @@
 [submodule "platform/darwin/docs/theme"]
 	path = platform/darwin/docs/theme
 	url = https://github.com/mapbox/jazzy-theme.git
+[submodule "platform/ios/ios-sdk-examples"]
+	path = platform/ios/ios-sdk-examples
+	url = https://github.com/mapbox/ios-sdk-examples.git
