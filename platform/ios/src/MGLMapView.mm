@@ -97,7 +97,7 @@ const MGLExceptionName MGLUserLocationAnnotationTypeException = @"MGLUserLocatio
 const MGLExceptionName MGLResourceNotFoundException = @"MGLResourceNotFoundException";
 const MGLExceptionName MGLUnderlyingMapUnavailableException = @"MGLUnderlyingMapUnavailableException";
 
-const CGPoint MGLDefaultOrnamentPositionOffset = CGPointMake(8, 8);
+const CGPoint MGLOrnamentDefaultPositionOffset = CGPointMake(8, 8);
 
 /// Indicates the manner in which the map view is tracking the user location.
 typedef NS_ENUM(NSUInteger, MGLUserTrackingState) {
@@ -518,7 +518,7 @@ public:
     [self addSubview:_logoView];
     _logoViewConstraints = [NSMutableArray array];
     _logoViewPosition = MGLOrnamentPositionBottomLeft;
-    _logoViewOffset = MGLDefaultOrnamentPositionOffset;
+    _logoViewOffset = MGLOrnamentDefaultPositionOffset;
 
     // setup attribution
     //
@@ -534,7 +534,7 @@ public:
     UILongPressGestureRecognizer *attributionLongPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(showAttribution:)];
     [_attributionButton addGestureRecognizer:attributionLongPress];
     _attributionButtonPosition = MGLOrnamentPositionBottomRight;
-    _attributionButtonOffset = MGLDefaultOrnamentPositionOffset;
+    _attributionButtonOffset = MGLOrnamentDefaultPositionOffset;
 
     // setup compass
     //
@@ -549,7 +549,7 @@ public:
     [self addSubview:_compassView];
     _compassViewConstraints = [NSMutableArray array];
     _compassViewPosition = MGLOrnamentPositionTopRight;
-    _compassViewOffset = MGLDefaultOrnamentPositionOffset;
+    _compassViewOffset = MGLOrnamentDefaultPositionOffset;
     
     // setup scale control
     //
@@ -558,7 +558,7 @@ public:
     [self addSubview:_scaleBar];
     _scaleBarConstraints = [NSMutableArray array];
     _scaleBarPosition = MGLOrnamentPositionTopLeft;
-    _scaleBarOffset = MGLDefaultOrnamentPositionOffset;
+    _scaleBarOffset = MGLOrnamentDefaultPositionOffset;
 
     [self installConstraints];
 
@@ -869,11 +869,11 @@ public:
     [self installAttributionButtonConstraints];
 }
 
-- (void)installConstraintsWithView:(UIView *)view
-                      constraints:(NSMutableArray *)constraints
-                         position:(MGLOrnamentPosition)position
-                             size:(CGSize)size
-                           offset:(CGPoint)offset {
+- (void)updateConstraintsForOrnament:(UIView *)view
+                       constraints:(NSMutableArray *)constraints
+                          position:(MGLOrnamentPosition)position
+                              size:(CGSize)size
+                            offset:(CGPoint)offset {
     NSMutableArray *updatedConstraints = [NSMutableArray array];
     
     switch (position) {
@@ -916,7 +916,7 @@ public:
 
 - (void)installCompassViewConstraints {
     // compass view
-    [self installConstraintsWithView:self.compassView
+    [self updateConstraintsForOrnament:self.compassView
                          constraints:self.compassViewConstraints
                             position:self.compassViewPosition
                                 size:self.compassView.bounds.size
@@ -925,7 +925,7 @@ public:
 
 - (void)installScaleBarConstraints {
     // scale bar view
-    [self installConstraintsWithView:self.scaleBar
+    [self updateConstraintsForOrnament:self.scaleBar
                          constraints:self.scaleBarConstraints
                             position:self.scaleBarPosition
                                 size:self.scaleBar.intrinsicContentSize
@@ -934,7 +934,7 @@ public:
 
 - (void)installLogoViewConstraints {
     // logo view
-    [self installConstraintsWithView:self.logoView
+    [self updateConstraintsForOrnament:self.logoView
                          constraints:self.logoViewConstraints
                             position:self.logoViewPosition
                                 size:self.logoView.bounds.size
@@ -943,7 +943,7 @@ public:
 
 - (void)installAttributionButtonConstraints {
     // attribution button
-    [self installConstraintsWithView:self.attributionButton
+    [self updateConstraintsForOrnament:self.attributionButton
                          constraints:self.attributionButtonConstraints
                             position:self.attributionButtonPosition
                                 size:self.attributionButton.bounds.size
