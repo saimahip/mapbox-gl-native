@@ -50,12 +50,8 @@ typedef NS_ENUM(NSInteger, MBXSettingsDebugToolsRows) {
 };
 
 typedef NS_ENUM(NSInteger, MBXSettingsAnnotationsRows) {
-    MBXSettingsAnnotations100Views = 0,
-    MBXSettingsAnnotations1000Views,
-    MBXSettingsAnnotations10000Views,
-    MBXSettingsAnnotations100Sprites,
-    MBXSettingsAnnotations1000Sprites,
-    MBXSettingsAnnotations10000Sprites,
+    MBXSettingsAddAnnotations = 0,
+    MBXSettingsAddSymbols,
     MBXSettingsAnnotationAnimation,
     MBXSettingsAnnotationsTestShapes,
     MBXSettingsAnnotationsCustomCallout,
@@ -106,6 +102,11 @@ typedef NS_ENUM(NSInteger, MBXSettingsMiscellaneousRows) {
     MBXSettingsMiscellaneousShowCustomLocationManager,
     MBXSettingsMiscellaneousPrintLogFile,
     MBXSettingsMiscellaneousDeleteLogFile,
+};
+
+typedef NS_ENUM(NSInteger, MBXSettingsMarkerTypes) {
+    MBXSettingsMarkerTypeAnnotation = 0,
+    MBXSettingsMarkerTypeSymbol
 };
 
 // Utility methods
@@ -443,12 +444,12 @@ CLLocationCoordinate2D randomWorldCoordinate() {
             break;
         case MBXSettingsAnnotations:
             [settingsTitles addObjectsFromArray:@[
-                @"Add 100 Views",
-                @"Add 1,000 Views",
-                @"Add 10,000 Views",
-                @"Add 100 Sprites",
-                @"Add 1,000 Sprites",
-                @"Add 10,000 Sprites",
+                @"Add view annotations",
+//                @"Add 1,000 Views",
+//                @"Add 10,000 Views",
+                @"Add symbols",
+//                @"Add 1,000 Sprites",
+//                @"Add 10,000 Sprites",
                 @"Animate an Annotation View",
                 @"Add Test Shapes",
                 @"Add Point With Custom Callout",
@@ -573,23 +574,11 @@ CLLocationCoordinate2D randomWorldCoordinate() {
         case MBXSettingsAnnotations:
             switch (indexPath.row)
             {
-                case MBXSettingsAnnotations100Views:
-                    [self parseFeaturesAddingCount:100 usingViews:YES];
+                case MBXSettingsAddAnnotations:
+                    [self addMarkersWithType:MBXSettingsMarkerTypeAnnotation];
                     break;
-                case MBXSettingsAnnotations1000Views:
-                    [self parseFeaturesAddingCount:1000 usingViews:YES];
-                    break;
-                case MBXSettingsAnnotations10000Views:
-                    [self parseFeaturesAddingCount:10000 usingViews:YES];
-                    break;
-                case MBXSettingsAnnotations100Sprites:
-                    [self parseFeaturesAddingCount:100 usingViews:NO];
-                    break;
-                case MBXSettingsAnnotations1000Sprites:
-                    [self parseFeaturesAddingCount:1000 usingViews:NO];
-                    break;
-                case MBXSettingsAnnotations10000Sprites:
-                    [self parseFeaturesAddingCount:10000 usingViews:NO];
+                case MBXSettingsAddSymbols:
+                    [self addMarkersWithType:MBXSettingsMarkerTypeSymbol];
                     break;
                 case MBXSettingsAnnotationAnimation:
                     [self animateAnnotationView];
@@ -803,45 +792,63 @@ CLLocationCoordinate2D randomWorldCoordinate() {
 
 #pragma mark - Debugging Actions
 
-- (void)parseFeaturesAddingCount:(NSUInteger)featuresCount usingViews:(BOOL)useViews
+- (void)addMarkersWithType:(NSInteger)markerType
 {
-    [self.mapView removeAnnotations:self.mapView.annotations];
+    NSString *markerTitle = (markerType == MBXSettingsMarkerTypeAnnotation ? @"annotations" : @"symbols");
 
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^
-    {
-        NSData *featuresData = [NSData dataWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"points" ofType:@"geojson"]];
+    UIAlertController *addMarkerAlert = [UIAlertController alertControllerWithTitle:[NSString stringWithFormat:@"Add %@", markerTitle]
+                                                                            message:@"Enter a number"
+                                                                     preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *saveMarkerAction = [UIAlertAction actionWithTitle:@"Save" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
 
-        id features = [NSJSONSerialization JSONObjectWithData:featuresData
-                                                      options:0
-                                                        error:nil];
+        NSUInteger markerCount = addMarkerAlert.textFields[0].text.integerValue;
 
-        if ([features isKindOfClass:[NSDictionary class]])
-        {
-            NSMutableArray *annotations = [NSMutableArray array];
+        [self.mapView removeAnnotations:self.mapView.annotations];
 
-            for (NSDictionary *feature in features[@"features"])
-            {
-                CLLocationCoordinate2D coordinate = CLLocationCoordinate2DMake([feature[@"geometry"][@"coordinates"][1] doubleValue],
-                                                                               [feature[@"geometry"][@"coordinates"][0] doubleValue]);
-                NSString *title = feature[@"properties"][@"NAME"];
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^
+                       {
+                           NSData *featuresData = [NSData dataWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"points" ofType:@"geojson"]];
 
-                MGLPointAnnotation *annotation = (useViews ? [MGLPointAnnotation new] : [MBXSpriteBackedAnnotation new]);
+                           id features = [NSJSONSerialization JSONObjectWithData:featuresData
+                                                                         options:0
+                                                                           error:nil];
 
-                annotation.coordinate = coordinate;
-                annotation.title = title;
+                           if ([features isKindOfClass:[NSDictionary class]])
+                           {
+                               NSMutableArray *annotations = [NSMutableArray array];
 
-                [annotations addObject:annotation];
+                               for (NSDictionary *feature in features[@"features"])
+                               {
+                                   CLLocationCoordinate2D coordinate = CLLocationCoordinate2DMake([feature[@"geometry"][@"coordinates"][1] doubleValue],
+                                                                                                  [feature[@"geometry"][@"coordinates"][0] doubleValue]);
+                                   NSString *title = feature[@"properties"][@"NAME"];
 
-                if (annotations.count == featuresCount) break;
-            }
+                                   MGLPointAnnotation *annotation = (markerType == MBXSettingsMarkerTypeAnnotation ? [MGLPointAnnotation new] : [MBXSpriteBackedAnnotation new]);
 
-            dispatch_async(dispatch_get_main_queue(), ^
-            {
-                [self.mapView addAnnotations:annotations];
-                [self.mapView showAnnotations:annotations animated:YES];
-            });
-        }
-    });
+                                   annotation.coordinate = coordinate;
+                                   annotation.title = title;
+
+                                   [annotations addObject:annotation];
+
+                                   if (annotations.count == markerCount) break;
+                               }
+
+                               dispatch_async(dispatch_get_main_queue(), ^
+                                              {
+                                                  [self.mapView addAnnotations:annotations];
+                                                  [self.mapView showAnnotations:annotations animated:YES];
+                                              });
+                           }
+                       });
+    }];
+
+    [addMarkerAlert addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
+        textField.keyboardType = UIKeyboardTypeNumberPad;
+    }];
+
+    [addMarkerAlert addAction:saveMarkerAction];
+    [self presentViewController:addMarkerAlert animated:YES completion:nil];
+
 }
 
 - (void)animateAnnotationView
