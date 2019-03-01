@@ -6,6 +6,10 @@ Mapbox welcomes participation and contributions from everyone. Please read [CONT
 
 * Client-side text rendering of CJK ideographs is now enabled by default. ([#13988](https://github.com/mapbox/mapbox-gl-native/pull/13988))
 
+### User interaction
+
+* Added options to customize position of scale bar, compass, logo and attribution. ([#13911](https://github.com/mapbox/mapbox-gl-native/pull/13911))
+
 ## 4.9.0 - February 27, 2019
 
 * Fixed a bug where setting `MGLMapView.userTrackingMode` to `MGLUserTrackingModeFollowWithHeading` or `MGLUserTrackingModeFollowWithCourse` would be ignored if the user’s location was not already available. ([#13849](https://github.com/mapbox/mapbox-gl-native/pull/13849))
@@ -65,10 +69,6 @@ Mapbox welcomes participation and contributions from everyone. Please read [CONT
 
 * `MGLMapSnapshotter` now respects the `MGLIdeographicFontFamilyName` key in Info.plist, which reduces bandwidth consumption when snapshotting regions that contain Chinese or Japanese characters. ([#13427](https://github.com/mapbox/mapbox-gl-native/pull/13427))
 * Fixed a sporadic crash when using `MGLMapSnapshotter`. ([#13300](https://github.com/mapbox/mapbox-gl-native/pull/13300))
-
-### User interaction
-
-* Added options to customize position of scale bar, compass, logo and attribution. ([#13911](https://github.com/mapbox/mapbox-gl-native/pull/13911))
 
 ### Other changes
 
