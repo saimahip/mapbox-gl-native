@@ -53,7 +53,6 @@ typedef NS_ENUM(NSInteger, MBXSettingsAnnotationsRows) {
     MBXSettingsAddAnnotations = 0,
     MBXSettingsAddSymbols,
     MBXSettingsAnnotationAnimation,
-    MBXSettingsAnnotationsQueryAnnotations,
     MBXSettingsAnnotationsCustomUserDot,
     MBXSettingsAnnotationsRemoveAnnotations,
     MBXSettingsAnnotationSelectRandomOffscreenPointAnnotation,
@@ -445,7 +444,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
                 @"Add view annotations",
                 @"Add symbols",
                 @"Animate an Annotation View",
-                @"Query Annotations",
                 [NSString stringWithFormat:@"%@ Custom User Dot", (_customUserLocationAnnnotationEnabled ? @"Disable" : @"Enable")],
                 @"Remove Annotations",
                 @"Select an offscreen point annotation",
@@ -574,9 +572,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
                     break;
                 case MBXSettingsAnnotationAnimation:
                     [self animateAnnotationView];
-                    break;
-                case MBXSettingsAnnotationsQueryAnnotations:
-                    [self testQueryPointAnnotations];
                     break;
                 case MBXSettingsAnnotationsCustomUserDot:
                     [self toggleCustomUserDot];
@@ -1493,20 +1488,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
     _customUserLocationAnnnotationEnabled = !_customUserLocationAnnnotationEnabled;
     self.mapView.showsUserLocation = NO;
     self.mapView.userTrackingMode = MGLUserTrackingModeFollow;
-}
-
-- (void)testQueryPointAnnotations {
-    NSNumber *visibleAnnotationCount = @(self.mapView.visibleAnnotations.count);
-    NSString *message;
-    if ([visibleAnnotationCount integerValue] == 1) {
-        message = [NSString stringWithFormat:@"There is %@ visible annotation.", visibleAnnotationCount];
-    } else {
-        message = [NSString stringWithFormat:@"There are %@ visible annotations.", visibleAnnotationCount];
-    }
-
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Visible Annotations" message:message preferredStyle:UIAlertControllerStyleAlert];
-    [alertController addAction:[UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleCancel handler:nil]];
-    [self presentViewController:alertController animated:YES completion:nil];
 }
 
 - (id<MGLAnnotation>)randomOffscreenPointAnnotation {
