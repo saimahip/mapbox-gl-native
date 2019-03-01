@@ -53,7 +53,6 @@ typedef NS_ENUM(NSInteger, MBXSettingsAnnotationsRows) {
     MBXSettingsAddAnnotations = 0,
     MBXSettingsAddSymbols,
     MBXSettingsAnnotationAnimation,
-    MBXSettingsAnnotationsTestShapes,
     MBXSettingsAnnotationsCustomCallout,
     MBXSettingsAnnotationsQueryAnnotations,
     MBXSettingsAnnotationsCustomUserDot,
@@ -445,13 +444,8 @@ CLLocationCoordinate2D randomWorldCoordinate() {
         case MBXSettingsAnnotations:
             [settingsTitles addObjectsFromArray:@[
                 @"Add view annotations",
-//                @"Add 1,000 Views",
-//                @"Add 10,000 Views",
                 @"Add symbols",
-//                @"Add 1,000 Sprites",
-//                @"Add 10,000 Sprites",
                 @"Animate an Annotation View",
-                @"Add Test Shapes",
                 @"Add Point With Custom Callout",
                 @"Query Annotations",
                 [NSString stringWithFormat:@"%@ Custom User Dot", (_customUserLocationAnnnotationEnabled ? @"Disable" : @"Enable")],
@@ -582,9 +576,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
                     break;
                 case MBXSettingsAnnotationAnimation:
                     [self animateAnnotationView];
-                    break;
-                case MBXSettingsAnnotationsTestShapes:
-                    [self addTestShapes];
                     break;
                 case MBXSettingsAnnotationsCustomCallout:
                     [self addAnnotationWithCustomCallout];
@@ -867,104 +858,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
             }];
         });
     };
-
-- (void)addTestShapes
-{
-    // Pacific Northwest triangle
-    //
-    CLLocationCoordinate2D triangleCoordinates[3] =
-    {
-        CLLocationCoordinate2DMake(44, -122),
-        CLLocationCoordinate2DMake(46, -122),
-        CLLocationCoordinate2DMake(46, -121)
-    };
-
-    MGLPolygon *triangle = [MGLPolygon polygonWithCoordinates:triangleCoordinates count:3];
-
-    [self.mapView addAnnotation:triangle];
-
-    // West coast polyline
-    //
-    CLLocationCoordinate2D lineCoordinates[4] = {
-        CLLocationCoordinate2DMake(47.6025, -122.3327),
-        CLLocationCoordinate2DMake(45.5189, -122.6726),
-        CLLocationCoordinate2DMake(37.7790, -122.4177),
-        CLLocationCoordinate2DMake(34.0532, -118.2349)
-    };
-    MGLPolyline *line = [MGLPolyline polylineWithCoordinates:lineCoordinates count:4];
-    [self.mapView addAnnotation:line];
-
-    // Orcas Island, WA hike polyline
-    //
-    NSDictionary *hike = [NSJSONSerialization JSONObjectWithData:
-                             [NSData dataWithContentsOfFile:
-                                 [[NSBundle mainBundle] pathForResource:@"polyline" ofType:@"geojson"]]
-                                                         options:0
-                                                           error:nil];
-
-    NSArray *hikeCoordinatePairs = hike[@"features"][0][@"geometry"][@"coordinates"];
-
-    CLLocationCoordinate2D *polylineCoordinates = (CLLocationCoordinate2D *)malloc([hikeCoordinatePairs count] * sizeof(CLLocationCoordinate2D));
-
-    for (NSUInteger i = 0; i < [hikeCoordinatePairs count]; i++)
-    {
-        polylineCoordinates[i] = CLLocationCoordinate2DMake([hikeCoordinatePairs[i][1] doubleValue], [hikeCoordinatePairs[i][0] doubleValue]);
-    }
-
-    MGLPolyline *polyline = [MGLPolyline polylineWithCoordinates:polylineCoordinates
-                                                           count:[hikeCoordinatePairs count]];
-
-    [self.mapView addAnnotation:polyline];
-
-    free(polylineCoordinates);
-
-    // PA/NJ/DE polygons
-    //
-    NSDictionary *threestates = [NSJSONSerialization JSONObjectWithData:
-                          [NSData dataWithContentsOfFile:
-                           [[NSBundle mainBundle] pathForResource:@"threestates" ofType:@"geojson"]]
-                                                         options:0
-                                                           error:nil];
-
-    for (NSDictionary *feature in threestates[@"features"])
-    {
-        NSArray *stateCoordinatePairs = feature[@"geometry"][@"coordinates"];
-
-        while ([stateCoordinatePairs count] == 1) stateCoordinatePairs = stateCoordinatePairs[0];
-
-        CLLocationCoordinate2D *polygonCoordinates = (CLLocationCoordinate2D *)malloc([stateCoordinatePairs count] * sizeof(CLLocationCoordinate2D));
-
-        for (NSUInteger i = 0; i < [stateCoordinatePairs count]; i++)
-        {
-            polygonCoordinates[i] = CLLocationCoordinate2DMake([stateCoordinatePairs[i][1] doubleValue], [stateCoordinatePairs[i][0] doubleValue]);
-        }
-
-        MGLPolygon *polygon = [MGLPolygon polygonWithCoordinates:polygonCoordinates count:[stateCoordinatePairs count]];
-        polygon.title = feature[@"properties"][@"NAME"];
-
-        [self.mapView addAnnotation:polygon];
-
-        free(polygonCoordinates);
-    }
-
-    // Null Island polygon with an interior hole
-    //
-    CLLocationCoordinate2D innerCoordinates[] = {
-        CLLocationCoordinate2DMake(-5, -5),
-        CLLocationCoordinate2DMake(-5, 5),
-        CLLocationCoordinate2DMake(5, 5),
-        CLLocationCoordinate2DMake(5, -5),
-    };
-    MGLPolygon *innerPolygon = [MGLPolygon polygonWithCoordinates:innerCoordinates count:sizeof(innerCoordinates) / sizeof(innerCoordinates[0])];
-    CLLocationCoordinate2D outerCoordinates[] = {
-        CLLocationCoordinate2DMake(-10, -10),
-        CLLocationCoordinate2DMake(-10, 10),
-        CLLocationCoordinate2DMake(10, 10),
-        CLLocationCoordinate2DMake(10, -10),
-    };
-    MGLPolygon *outerPolygon = [MGLPolygon polygonWithCoordinates:outerCoordinates count:sizeof(outerCoordinates) / sizeof(outerCoordinates[0]) interiorPolygons:@[innerPolygon]];
-    [self.mapView addAnnotation:outerPolygon];
-}
 
 - (void)addAnnotationWithCustomCallout
 {
