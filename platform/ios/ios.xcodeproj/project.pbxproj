@@ -122,7 +122,6 @@
 		354B83971D2E873E005D9406 /* MGLUserLocationAnnotationView.h in Headers */ = {isa = PBXBuildFile; fileRef = 354B83941D2E873E005D9406 /* MGLUserLocationAnnotationView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		354B83981D2E873E005D9406 /* MGLUserLocationAnnotationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 354B83951D2E873E005D9406 /* MGLUserLocationAnnotationView.m */; };
 		354B83991D2E873E005D9406 /* MGLUserLocationAnnotationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 354B83951D2E873E005D9406 /* MGLUserLocationAnnotationView.m */; };
-		354B839C1D2E9B48005D9406 /* MBXUserLocationAnnotationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 354B839B1D2E9B48005D9406 /* MBXUserLocationAnnotationView.m */; };
 		3557F7B01E1D27D300CCA5E6 /* MGLDistanceFormatter.h in Headers */ = {isa = PBXBuildFile; fileRef = 3557F7AE1E1D27D300CCA5E6 /* MGLDistanceFormatter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3557F7B21E1D27D300CCA5E6 /* MGLDistanceFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3557F7AF1E1D27D300CCA5E6 /* MGLDistanceFormatter.m */; };
 		35599DED1D46F14E0048254D /* MGLStyleValue.mm in Sources */ = {isa = PBXBuildFile; fileRef = 35599DEA1D46F14E0048254D /* MGLStyleValue.mm */; };
@@ -914,8 +913,6 @@
 		353D23951D0B0DFE002BE09D /* MGLAnnotationViewTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGLAnnotationViewTests.m; sourceTree = "<group>"; };
 		354B83941D2E873E005D9406 /* MGLUserLocationAnnotationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGLUserLocationAnnotationView.h; sourceTree = "<group>"; };
 		354B83951D2E873E005D9406 /* MGLUserLocationAnnotationView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGLUserLocationAnnotationView.m; sourceTree = "<group>"; };
-		354B839A1D2E9B48005D9406 /* MBXUserLocationAnnotationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MBXUserLocationAnnotationView.h; sourceTree = "<group>"; };
-		354B839B1D2E9B48005D9406 /* MBXUserLocationAnnotationView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBXUserLocationAnnotationView.m; sourceTree = "<group>"; };
 		3557F7AE1E1D27D300CCA5E6 /* MGLDistanceFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGLDistanceFormatter.h; sourceTree = "<group>"; };
 		3557F7AF1E1D27D300CCA5E6 /* MGLDistanceFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGLDistanceFormatter.m; sourceTree = "<group>"; };
 		35599DEA1D46F14E0048254D /* MGLStyleValue.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MGLStyleValue.mm; sourceTree = "<group>"; };
@@ -1929,8 +1926,6 @@
 				DA1DC9981CB6E054006E619F /* MBXAppDelegate.m */,
 				40FDA7691CCAAA6800442548 /* MBXAnnotationView.h */,
 				40FDA76A1CCAAA6800442548 /* MBXAnnotationView.m */,
-				354B839A1D2E9B48005D9406 /* MBXUserLocationAnnotationView.h */,
-				354B839B1D2E9B48005D9406 /* MBXUserLocationAnnotationView.m */,
 				DA1DC9681CB6C6B7006E619F /* MBXOfflinePacksTableViewController.h */,
 				DA1DC9691CB6C6B7006E619F /* MBXOfflinePacksTableViewController.m */,
 				927FBCFA1F4DAA8300F8BF1F /* MBXSnapshotsViewController.h */,
@@ -3071,7 +3066,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				DA1DC9971CB6E046006E619F /* main.m in Sources */,
-				354B839C1D2E9B48005D9406 /* MBXUserLocationAnnotationView.m in Sources */,
 				965DF51120F9430500438AAC /* MBXFrameTimeGraphView.m in Sources */,
 				DA1DC9991CB6E054006E619F /* MBXAppDelegate.m in Sources */,
 				DA1DC96B1CB6C6B7006E619F /* MBXOfflinePacksTableViewController.m in Sources */,

@@ -1,10 +1,8 @@
 #import "MBXViewController.h"
 
 #import "MBXAppDelegate.h"
-#import "MBXCustomCalloutView.h"
 #import "MBXOfflinePacksTableViewController.h"
 #import "MBXAnnotationView.h"
-#import "MBXUserLocationAnnotationView.h"
 #import "LimeGreenStyleLayer.h"
 #import "MBXEmbeddedMapViewController.h"
 
@@ -444,7 +442,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
                 @"Add view annotations",
                 @"Add symbols",
                 @"Animate an Annotation View",
-                [NSString stringWithFormat:@"%@ Custom User Dot", (_customUserLocationAnnnotationEnabled ? @"Disable" : @"Enable")],
                 @"Remove Annotations",
                 @"Select an offscreen point annotation",
                 @"Center selected annotation",
@@ -1483,13 +1480,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
     }];
 }
 
-- (void)toggleCustomUserDot
-{
-    _customUserLocationAnnnotationEnabled = !_customUserLocationAnnnotationEnabled;
-    self.mapView.showsUserLocation = NO;
-    self.mapView.userTrackingMode = MGLUserTrackingModeFollow;
-}
-
 - (id<MGLAnnotation>)randomOffscreenPointAnnotation {
 
     NSPredicate *pointAnnotationPredicate = [NSPredicate predicateWithBlock:^BOOL(id  _Nullable evaluatedObject, NSDictionary<NSString *,id> * _Nullable bindings) {
@@ -1857,13 +1847,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
 {
     if (annotation == mapView.userLocation)
     {
-        if (_customUserLocationAnnnotationEnabled)
-        {
-            MBXUserLocationAnnotationView *annotationView = [[MBXUserLocationAnnotationView alloc] initWithFrame:CGRectZero];
-            annotationView.frame = CGRectMake(0, 0, annotationView.intrinsicContentSize.width, annotationView.intrinsicContentSize.height);
-            return annotationView;
-        }
-
         return nil;
     }
     // Use GL backed pins for dropped pin annotations
