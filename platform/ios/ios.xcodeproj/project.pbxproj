@@ -723,9 +723,6 @@
 		DD0902A91DB1929D00C5BDCE /* MGLNetworkConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = DD0902A21DB18DE700C5BDCE /* MGLNetworkConfiguration.m */; };
 		DD0902AA1DB1929D00C5BDCE /* MGLNetworkConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = DD0902A21DB18DE700C5BDCE /* MGLNetworkConfiguration.m */; };
 		DD0902AB1DB192A800C5BDCE /* MGLNetworkConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = DD0902A41DB18F1B00C5BDCE /* MGLNetworkConfiguration.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		DD4823751D94AE6C00EB71B7 /* fill_filter_style.json in Resources */ = {isa = PBXBuildFile; fileRef = DD4823721D94AE6C00EB71B7 /* fill_filter_style.json */; };
-		DD4823761D94AE6C00EB71B7 /* line_filter_style.json in Resources */ = {isa = PBXBuildFile; fileRef = DD4823731D94AE6C00EB71B7 /* line_filter_style.json */; };
-		DD4823771D94AE6C00EB71B7 /* numeric_filter_style.json in Resources */ = {isa = PBXBuildFile; fileRef = DD4823741D94AE6C00EB71B7 /* numeric_filter_style.json */; };
 		DD58A4C61D822BD000E1F038 /* MGLExpressionTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = DD58A4C51D822BD000E1F038 /* MGLExpressionTests.mm */; };
 		DD9BE4F71EB263C50079A3AF /* UIViewController+MGLAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = DD9BE4F51EB263C50079A3AF /* UIViewController+MGLAdditions.h */; };
 		DD9BE4F81EB263C50079A3AF /* UIViewController+MGLAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = DD9BE4F61EB263C50079A3AF /* UIViewController+MGLAdditions.m */; };
@@ -1398,9 +1395,6 @@
 		DAFEB3782093AE9200A86A83 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = ko; path = ko.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
 		DD0902A21DB18DE700C5BDCE /* MGLNetworkConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGLNetworkConfiguration.m; sourceTree = "<group>"; };
 		DD0902A41DB18F1B00C5BDCE /* MGLNetworkConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGLNetworkConfiguration.h; sourceTree = "<group>"; };
-		DD4823721D94AE6C00EB71B7 /* fill_filter_style.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = fill_filter_style.json; sourceTree = "<group>"; };
-		DD4823731D94AE6C00EB71B7 /* line_filter_style.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = line_filter_style.json; sourceTree = "<group>"; };
-		DD4823741D94AE6C00EB71B7 /* numeric_filter_style.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = numeric_filter_style.json; sourceTree = "<group>"; };
 		DD58A4C51D822BD000E1F038 /* MGLExpressionTests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = MGLExpressionTests.mm; path = ../../darwin/test/MGLExpressionTests.mm; sourceTree = "<group>"; };
 		DD9BE4F51EB263C50079A3AF /* UIViewController+MGLAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+MGLAdditions.h"; sourceTree = "<group>"; };
 		DD9BE4F61EB263C50079A3AF /* UIViewController+MGLAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+MGLAdditions.m"; sourceTree = "<group>"; };
@@ -1858,9 +1852,6 @@
 				DA1DC96D1CB6C6CE006E619F /* polyline.geojson */,
 				1F26B6C220E1A351007BCC21 /* simple_route.json */,
 				DA1DC96F1CB6C6CE006E619F /* threestates.geojson */,
-				DD4823721D94AE6C00EB71B7 /* fill_filter_style.json */,
-				DD4823731D94AE6C00EB71B7 /* line_filter_style.json */,
-				DD4823741D94AE6C00EB71B7 /* numeric_filter_style.json */,
 			);
 			name = Fixtures;
 			sourceTree = "<group>";
@@ -2963,17 +2954,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DD4823771D94AE6C00EB71B7 /* numeric_filter_style.json in Resources */,
 				DA1DC9701CB6C6CE006E619F /* points.geojson in Resources */,
 				DA1DC9711CB6C6CE006E619F /* polyline.geojson in Resources */,
-				DD4823761D94AE6C00EB71B7 /* line_filter_style.json in Resources */,
 				076171C72141A91700668A35 /* Settings.bundle in Resources */,
 				DA821D071CCC6D59007508D4 /* Main.storyboard in Resources */,
 				DA1DC9731CB6C6CE006E619F /* threestates.geojson in Resources */,
 				DA821D061CCC6D59007508D4 /* LaunchScreen.storyboard in Resources */,
 				96E027231E57C76E004B8E66 /* Localizable.strings in Resources */,
 				1F26B6C320E1A351007BCC21 /* simple_route.json in Resources */,
-				DD4823751D94AE6C00EB71B7 /* fill_filter_style.json in Resources */,
 				DA1DC99F1CB6E088006E619F /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

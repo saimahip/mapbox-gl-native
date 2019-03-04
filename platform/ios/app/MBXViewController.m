@@ -60,9 +60,6 @@ typedef NS_ENUM(NSInteger, MBXSettingsAnnotationsRows) {
 
 typedef NS_ENUM(NSInteger, MBXSettingsRuntimeStylingRows) {
     MBXSettingsRuntimeStylingWater = 0,
-    MBXSettingsRuntimeStylingFilteredFill,
-    MBXSettingsRuntimeStylingFilteredLines,
-    MBXSettingsRuntimeStylingNumericFilteredFill,
     MBXSettingsRuntimeStylingStyleQuery,
     MBXSettingsRuntimeStylingFeatureSource,
     MBXSettingsRuntimeStylingPointCollection,
@@ -443,9 +440,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
         case MBXSettingsRuntimeStyling:
             [settingsTitles addObjectsFromArray:@[
                 @"Style Water With Function",
-                @"Style Fill With Filter",
-                @"Style Lines With Filter",
-                @"Style Fill With Numeric Filter",
                 @"Query and Style Features",
                 @"Style Feature",
                 @"Style Dynamic Point Collection",
@@ -578,15 +572,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
             {
                 case MBXSettingsRuntimeStylingWater:
                     [self styleWaterLayer];
-                    break;
-                case MBXSettingsRuntimeStylingFilteredFill:
-                    [self styleFilteredFill];
-                    break;
-                case MBXSettingsRuntimeStylingFilteredLines:
-                    [self styleFilteredLines];
-                    break;
-                case MBXSettingsRuntimeStylingNumericFilteredFill:
-                    [self styleNumericFilteredFills];
                     break;
                 case MBXSettingsRuntimeStylingStyleQuery:
                     [self styleQuery];
@@ -821,67 +806,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
     waterLayer.fillAntialiased = [NSExpression mgl_expressionForSteppingExpression:NSExpression.zoomLevelVariableExpression
                                                                     fromExpression:[NSExpression expressionForConstantValue:@NO]
                                                                              stops:[NSExpression expressionForConstantValue:fillAntialiasedStops]];
-}
-
-- (void)styleFilteredFill
-{
-    // set style and focus on Texas
-    [self.mapView setStyleURL:[NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"fill_filter_style" ofType:@"json"]]];
-    [self.mapView setCenterCoordinate:CLLocationCoordinate2DMake(31, -100) zoomLevel:3 animated:NO];
-
-    // after slight delay, fill in Texas (atypical use; we want to clearly see the change for test purposes)
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^
-    {
-        MGLFillStyleLayer *statesLayer = (MGLFillStyleLayer *)[self.mapView.style layerWithIdentifier:@"states"];
-
-        // filter
-        statesLayer.predicate = [NSPredicate predicateWithFormat:@"name == 'Texas'"];
-
-        // paint properties
-        statesLayer.fillColor = [NSExpression expressionForConstantValue:[UIColor redColor]];
-        statesLayer.fillOpacity = [NSExpression expressionForConstantValue:@0.25];
-    });
-}
-
-- (void)styleFilteredLines
-{
-    // set style and focus on lower 48
-    [self.mapView setStyleURL:[NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"line_filter_style" ofType:@"json"]]];
-    [self.mapView setCenterCoordinate:CLLocationCoordinate2DMake(40, -97) zoomLevel:5 animated:NO];
-
-    // after slight delay, change styling for all Washington-named counties  (atypical use; we want to clearly see the change for test purposes)
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^
-    {
-        MGLLineStyleLayer *countiesLayer = (MGLLineStyleLayer *)[self.mapView.style layerWithIdentifier:@"counties"];
-
-        // filter
-        countiesLayer.predicate = [NSPredicate predicateWithFormat:@"NAME10 == 'Washington'"];
-
-        // paint properties
-        countiesLayer.lineColor = [NSExpression expressionForConstantValue:[UIColor redColor]];
-        countiesLayer.lineOpacity = [NSExpression expressionForConstantValue:@0.75];
-        countiesLayer.lineWidth = [NSExpression expressionForConstantValue:@5];
-    });
-}
-
-- (void)styleNumericFilteredFills
-{
-    // set style and focus on lower 48
-    [self.mapView setStyleURL:[NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"numeric_filter_style" ofType:@"json"]]];
-    [self.mapView setCenterCoordinate:CLLocationCoordinate2DMake(40, -97) zoomLevel:5 animated:NO];
-
-    // after slight delay, change styling for regions 200-299 (atypical use; we want to clearly see the change for test purposes)
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^
-    {
-        MGLFillStyleLayer *regionsLayer = (MGLFillStyleLayer *)[self.mapView.style layerWithIdentifier:@"regions"];
-
-        // filter (testing both inline and format strings)
-        regionsLayer.predicate = [NSPredicate predicateWithFormat:@"CAST(HRRNUM, 'NSNumber') >= %@ AND CAST(HRRNUM, 'NSNumber') < 300", @(200)];
-
-        // paint properties
-        regionsLayer.fillColor = [NSExpression expressionForConstantValue:[UIColor blueColor]];
-        regionsLayer.fillOpacity = [NSExpression expressionForConstantValue:@0.5];
-    });
 }
 
 - (void)styleQuery
