@@ -62,7 +62,6 @@ typedef NS_ENUM(NSInteger, MBXSettingsRuntimeStylingRows) {
     MBXSettingsRuntimeStylingWater = 0,
     MBXSettingsRuntimeStylingStyleQuery,
     MBXSettingsRuntimeStylingFeatureSource,
-    MBXSettingsRuntimeStylingPointCollection,
     MBXSettingsRuntimeStylingUpdateShapeSourceData,
     MBXSettingsRuntimeStylingUpdateShapeSourceURL,
     MBXSettingsRuntimeStylingUpdateShapeSourceFeatures,
@@ -440,7 +439,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
         case MBXSettingsRuntimeStyling:
             [settingsTitles addObjectsFromArray:@[
                 @"Style Water With Function",
-                @"Style Dynamic Point Collection",
                 @"Update Shape Source: Data",
                 @"Update Shape Source: URL",
                 @"Update Shape Source: Features",
@@ -570,9 +568,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
             {
                 case MBXSettingsRuntimeStylingWater:
                     [self styleWaterLayer];
-                    break;
-                case MBXSettingsRuntimeStylingPointCollection:
-                    [self styleDynamicPointCollection];
                     break;
                 case MBXSettingsRuntimeStylingUpdateShapeSourceURL:
                     [self updateShapeSourceURL];
@@ -879,24 +874,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         source.shape = largeBoxFeature;
     });
-}
-
-- (void)styleDynamicPointCollection
-{
-    [self.mapView setCenterCoordinate:CLLocationCoordinate2DMake(36.9979, -109.0441) zoomLevel:14 animated:NO];
-
-    CLLocationCoordinate2D coordinates[] = {
-        {37.00145594210082, -109.04960632324219},
-        {37.00173012609867, -109.0404224395752},
-        {36.99453246847359, -109.04960632324219},
-        {36.99508088541243, -109.04007911682129},
-    };
-    MGLPointCollectionFeature *feature = [MGLPointCollectionFeature pointCollectionWithCoordinates:coordinates count:4];
-    MGLShapeSource *source = [[MGLShapeSource alloc] initWithIdentifier:@"wiggle-source" shape:feature options:nil];
-    [self.mapView.style addSource:source];
-
-    MGLCircleStyleLayer *layer = [[MGLCircleStyleLayer alloc] initWithIdentifier:@"wiggle-layer" source:source];
-    [self.mapView.style addLayer:layer];
 }
 
 - (void)styleVectorTileSource
