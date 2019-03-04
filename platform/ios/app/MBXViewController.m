@@ -446,7 +446,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
         case MBXSettingsRuntimeStyling:
             [settingsTitles addObjectsFromArray:@[
                 @"Style Water With Function",
-                @"Style Ferry Line Color",
                 @"Remove Parks",
                 @"Style Fill With Filter",
                 @"Style Lines With Filter",
@@ -583,9 +582,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
             {
                 case MBXSettingsRuntimeStylingWater:
                     [self styleWaterLayer];
-                    break;
-                case MBXSettingsRuntimeStylingFerry:
-                    [self styleFerryLayer];
                     break;
                 case MBXSettingsRuntimeStylingParks:
                     [self removeParkLayer];
@@ -832,12 +828,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
     waterLayer.fillAntialiased = [NSExpression mgl_expressionForSteppingExpression:NSExpression.zoomLevelVariableExpression
                                                                     fromExpression:[NSExpression expressionForConstantValue:@NO]
                                                                              stops:[NSExpression expressionForConstantValue:fillAntialiasedStops]];
-}
-
-- (void)styleFerryLayer
-{
-    MGLLineStyleLayer *ferryLineLayer = (MGLLineStyleLayer *)[self.mapView.style layerWithIdentifier:@"ferry"];
-    ferryLineLayer.lineColor = [NSExpression expressionForConstantValue:[UIColor redColor]];
 }
 
 - (void)removeParkLayer
