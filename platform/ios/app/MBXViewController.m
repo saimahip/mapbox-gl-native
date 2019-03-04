@@ -61,7 +61,6 @@ typedef NS_ENUM(NSInteger, MBXSettingsAnnotationsRows) {
 typedef NS_ENUM(NSInteger, MBXSettingsRuntimeStylingRows) {
     MBXSettingsRuntimeStylingWater = 0,
     MBXSettingsRuntimeStylingShape,
-    MBXSettingsRuntimeStylingSymbols,
     MBXSettingsRuntimeStylingFerry,
     MBXSettingsRuntimeStylingParks,
     MBXSettingsRuntimeStylingFilteredFill,
@@ -447,7 +446,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
         case MBXSettingsRuntimeStyling:
             [settingsTitles addObjectsFromArray:@[
                 @"Style Water With Function",
-                @"Style Symbol Color",
                 @"Style Building Fill Color",
                 @"Style Ferry Line Color",
                 @"Remove Parks",
@@ -586,9 +584,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
             {
                 case MBXSettingsRuntimeStylingWater:
                     [self styleWaterLayer];
-                    break;
-                case MBXSettingsRuntimeStylingSymbols:
-                    [self styleSymbolLayer];
                     break;
                 case MBXSettingsRuntimeStylingFerry:
                     [self styleFerryLayer];
@@ -838,12 +833,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
     waterLayer.fillAntialiased = [NSExpression mgl_expressionForSteppingExpression:NSExpression.zoomLevelVariableExpression
                                                                     fromExpression:[NSExpression expressionForConstantValue:@NO]
                                                                              stops:[NSExpression expressionForConstantValue:fillAntialiasedStops]];
-}
-
-- (void)styleSymbolLayer
-{
-    MGLSymbolStyleLayer *stateLayer = (MGLSymbolStyleLayer *)[self.mapView.style layerWithIdentifier:@"state-label-lg"];
-    stateLayer.textColor = [NSExpression expressionForConstantValue:[UIColor redColor]];
 }
 
 - (void)styleBuildingLayer
