@@ -60,9 +60,6 @@ typedef NS_ENUM(NSInteger, MBXSettingsAnnotationsRows) {
 
 typedef NS_ENUM(NSInteger, MBXSettingsRuntimeStylingRows) {
     MBXSettingsRuntimeStylingWater = 0,
-    MBXSettingsRuntimeStylingShape,
-    MBXSettingsRuntimeStylingFerry,
-    MBXSettingsRuntimeStylingParks,
     MBXSettingsRuntimeStylingFilteredFill,
     MBXSettingsRuntimeStylingFilteredLines,
     MBXSettingsRuntimeStylingNumericFilteredFill,
@@ -446,7 +443,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
         case MBXSettingsRuntimeStyling:
             [settingsTitles addObjectsFromArray:@[
                 @"Style Water With Function",
-                @"Remove Parks",
                 @"Style Fill With Filter",
                 @"Style Lines With Filter",
                 @"Style Fill With Numeric Filter",
@@ -582,9 +578,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
             {
                 case MBXSettingsRuntimeStylingWater:
                     [self styleWaterLayer];
-                    break;
-                case MBXSettingsRuntimeStylingParks:
-                    [self removeParkLayer];
                     break;
                 case MBXSettingsRuntimeStylingFilteredFill:
                     [self styleFilteredFill];
@@ -828,12 +821,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
     waterLayer.fillAntialiased = [NSExpression mgl_expressionForSteppingExpression:NSExpression.zoomLevelVariableExpression
                                                                     fromExpression:[NSExpression expressionForConstantValue:@NO]
                                                                              stops:[NSExpression expressionForConstantValue:fillAntialiasedStops]];
-}
-
-- (void)removeParkLayer
-{
-    MGLFillStyleLayer *parkLayer = (MGLFillStyleLayer *)[self.mapView.style layerWithIdentifier:@"park"];
-    [self.mapView.style removeLayer:parkLayer];
 }
 
 - (void)styleFilteredFill
