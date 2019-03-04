@@ -440,7 +440,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
         case MBXSettingsRuntimeStyling:
             [settingsTitles addObjectsFromArray:@[
                 @"Style Water With Function",
-                @"Query and Style Features",
                 @"Style Feature",
                 @"Style Dynamic Point Collection",
                 @"Update Shape Source: Data",
@@ -572,9 +571,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
             {
                 case MBXSettingsRuntimeStylingWater:
                     [self styleWaterLayer];
-                    break;
-                case MBXSettingsRuntimeStylingStyleQuery:
-                    [self styleQuery];
                     break;
                 case MBXSettingsRuntimeStylingFeatureSource:
                     [self styleFeature];
@@ -806,38 +802,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
     waterLayer.fillAntialiased = [NSExpression mgl_expressionForSteppingExpression:NSExpression.zoomLevelVariableExpression
                                                                     fromExpression:[NSExpression expressionForConstantValue:@NO]
                                                                              stops:[NSExpression expressionForConstantValue:fillAntialiasedStops]];
-}
-
-- (void)styleQuery
-{
-    CGRect queryRect = CGRectInset(self.mapView.bounds, 100, 200);
-    NSArray *visibleFeatures = [self.mapView visibleFeaturesInRect:queryRect];
-
-    NSString *querySourceID = @"query-source-id";
-    NSString *queryLayerID = @"query-layer-id";
-
-    // RTE if you don't remove the layer first
-    // RTE if you pass a nill layer to remove layer
-    MGLStyleLayer *layer = [self.mapView.style layerWithIdentifier:queryLayerID];
-    if (layer) {
-        [self.mapView.style removeLayer:layer];
-    }
-
-    // RTE if you pass a nill source to remove source
-    MGLSource *source = [self.mapView.style sourceWithIdentifier:querySourceID];
-    if (source) {
-        [self.mapView.style removeSource:source];
-    }
-
-    dispatch_async(dispatch_get_main_queue(), ^{
-        MGLShapeSource *shapeSource = [[MGLShapeSource alloc] initWithIdentifier:querySourceID features:visibleFeatures options:nil];
-        [self.mapView.style addSource:shapeSource];
-
-        MGLFillStyleLayer *fillLayer = [[MGLFillStyleLayer alloc] initWithIdentifier:queryLayerID source:shapeSource];
-        fillLayer.fillColor = [NSExpression expressionForConstantValue:[UIColor blueColor]];
-        fillLayer.fillOpacity = [NSExpression expressionForConstantValue:@0.5];
-        [self.mapView.style addLayer:fillLayer];
-    });
 }
 
 - (void)styleFeature
