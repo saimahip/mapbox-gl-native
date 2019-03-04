@@ -62,9 +62,6 @@ typedef NS_ENUM(NSInteger, MBXSettingsRuntimeStylingRows) {
     MBXSettingsRuntimeStylingWater = 0,
     MBXSettingsRuntimeStylingStyleQuery,
     MBXSettingsRuntimeStylingFeatureSource,
-    MBXSettingsRuntimeStylingUpdateShapeSourceData,
-    MBXSettingsRuntimeStylingUpdateShapeSourceURL,
-    MBXSettingsRuntimeStylingUpdateShapeSourceFeatures,
     MBXSettingsRuntimeStylingVectorTileSource,
     MBXSettingsRuntimeStylingRasterTileSource,
     MBXSettingsRuntimeStylingImageSource,
@@ -439,9 +436,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
         case MBXSettingsRuntimeStyling:
             [settingsTitles addObjectsFromArray:@[
                 @"Style Water With Function",
-                @"Update Shape Source: Data",
-                @"Update Shape Source: URL",
-                @"Update Shape Source: Features",
                 @"Style Vector Tile Source",
                 @"Style Image Source",
                 @"Add Route Line",
@@ -568,15 +562,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
             {
                 case MBXSettingsRuntimeStylingWater:
                     [self styleWaterLayer];
-                    break;
-                case MBXSettingsRuntimeStylingUpdateShapeSourceURL:
-                    [self updateShapeSourceURL];
-                    break;
-                case MBXSettingsRuntimeStylingUpdateShapeSourceData:
-                    [self updateShapeSourceData];
-                    break;
-                case MBXSettingsRuntimeStylingUpdateShapeSourceFeatures:
-                    [self updateShapeSourceFeatures];
                     break;
                 case MBXSettingsRuntimeStylingVectorTileSource:
                     [self styleVectorTileSource];
@@ -793,87 +778,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
     waterLayer.fillAntialiased = [NSExpression mgl_expressionForSteppingExpression:NSExpression.zoomLevelVariableExpression
                                                                     fromExpression:[NSExpression expressionForConstantValue:@NO]
                                                                              stops:[NSExpression expressionForConstantValue:fillAntialiasedStops]];
-}
-
-- (void)updateShapeSourceData
-{
-    [self.mapView setCenterCoordinate:CLLocationCoordinate2DMake(40.329795743702064, -107.75390625) zoomLevel:11 animated:NO];
-
-    NSString *geoJSON = @"{\"type\": \"FeatureCollection\",\"features\": [{\"type\": \"Feature\",\"properties\": {},\"geometry\": {\"type\": \"LineString\",\"coordinates\": [[-107.75390625,40.329795743702064],[-104.34814453125,37.64903402157866]]}}]}";
-
-    NSData *data = [geoJSON dataUsingEncoding:NSUTF8StringEncoding];
-    MGLShape *shape = [MGLShape shapeWithData:data encoding:NSUTF8StringEncoding error:NULL];
-    MGLShapeSource *source = [[MGLShapeSource alloc] initWithIdentifier:@"mutable-data-source-id" shape:shape options:nil];
-    [self.mapView.style addSource:source];
-
-    MGLLineStyleLayer *layer = [[MGLLineStyleLayer alloc] initWithIdentifier:@"mutable-data-layer-id" source:source];
-    [self.mapView.style addLayer:layer];
-
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        NSString *updatedGeoJSON = @"{\"type\": \"FeatureCollection\",\"features\": [{\"type\": \"Feature\",\"properties\": {},\"geometry\": {\"type\": \"LineString\",\"coordinates\": [[-107.75390625,40.329795743702064],[-109.34814453125,37.64903402157866]]}}]}";
-        NSData *updatedData = [updatedGeoJSON dataUsingEncoding:NSUTF8StringEncoding];
-        MGLShape *updatedShape = [MGLShape shapeWithData:updatedData encoding:NSUTF8StringEncoding error:NULL];
-        source.shape = updatedShape;
-    });
-}
-
-- (void)updateShapeSourceURL
-{
-    [self.mapView setCenterCoordinate:CLLocationCoordinate2DMake(48.668731, -122.857151) zoomLevel:11 animated:NO];
-
-    NSString *filePath = [[NSBundle bundleForClass:self.class] pathForResource:@"polyline" ofType:@"geojson"];
-    NSURL *geoJSONURL = [NSURL fileURLWithPath:filePath];
-    MGLShapeSource *source = [[MGLShapeSource alloc] initWithIdentifier:@"mutable-data-source-url-id" URL:geoJSONURL options:nil];
-    [self.mapView.style addSource:source];
-
-    MGLLineStyleLayer *layer = [[MGLLineStyleLayer alloc] initWithIdentifier:@"mutable-data-layer-url-id" source:source];
-    [self.mapView.style addLayer:layer];
-
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [self.mapView setCenterCoordinate:CLLocationCoordinate2DMake(41.563986787078704, -75.04843935793578) zoomLevel:8 animated:NO];
-
-        NSString *threeStatesFilePath = [[NSBundle bundleForClass:self.class] pathForResource:@"threestates" ofType:@"geojson"];
-        NSURL *updatedGeoJSONURL = [NSURL fileURLWithPath:threeStatesFilePath];
-
-        source.URL = updatedGeoJSONURL;
-    });
-}
-
-- (void)updateShapeSourceFeatures
-{
-    [self.mapView setCenterCoordinate:CLLocationCoordinate2DMake(-41.1520, 288.6592) zoomLevel:10 animated:NO];
-
-    CLLocationCoordinate2D smallBox[] = {
-        {-41.14763798539186, 288.68019104003906},
-        {-41.140915920129665, 288.68019104003906},
-        {-41.140915920129665, 288.6887741088867},
-        {-41.14763798539186, 288.6887741088867},
-        {-41.14763798539186, 288.68019104003906}
-    };
-
-    CLLocationCoordinate2D largeBox[] = {
-        {-41.17710352162799, 288.67298126220703},
-        {-41.13962313627545, 288.67298126220703},
-        {-41.13962313627545, 288.7261962890625},
-        {-41.17710352162799, 288.7261962890625},
-        {-41.17710352162799, 288.67298126220703}
-    };
-
-    MGLPolygonFeature *smallBoxFeature = [MGLPolygonFeature polygonWithCoordinates:smallBox count:sizeof(smallBox)/sizeof(smallBox[0])];
-    MGLPolygonFeature *largeBoxFeature = [MGLPolygonFeature polygonWithCoordinates:largeBox count:sizeof(largeBox)/sizeof(largeBox[0])];
-
-    MGLShapeSource *source = [[MGLShapeSource alloc] initWithIdentifier:@"mutable-data-source-features-id"
-                                                                    shape:smallBoxFeature
-                                                                    options:nil];
-    [self.mapView.style addSource:source];
-
-    MGLFillStyleLayer *layer = [[MGLFillStyleLayer alloc] initWithIdentifier:@"mutable-data-layer-features-id" source:source];
-    layer.fillColor = [NSExpression expressionForConstantValue:[UIColor redColor]];
-    [self.mapView.style addLayer:layer];
-
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        source.shape = largeBoxFeature;
-    });
 }
 
 - (void)styleVectorTileSource
