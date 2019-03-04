@@ -60,15 +60,14 @@ typedef NS_ENUM(NSInteger, MBXSettingsAnnotationsRows) {
 typedef NS_ENUM(NSInteger, MBXSettingsRuntimeStylingRows) {
     MBXSettingsRuntimeStylingAddLimeGreenTriangleLayer,
     MBXSettingsRuntimeStylingDDSPolygon,
-    MBXSettingsRuntimeStylingCustomLatLonGrid,
+    MBXSettingsRuntimeStylingCustomLatLonGrid, // TODO: Move to ios-sdk-examples
 };
 
 typedef NS_ENUM(NSInteger, MBXSettingsMiscellaneousRows) {
-    MBXSettingsMiscellaneousWorldTour,
     MBXSettingsMiscellaneousRandomTour,
     MBXSettingsMiscellaneousScrollView,
     MBXSettingsMiscellaneousToggleTwoMaps,
-    MBXSettingsMiscellaneousLocalizeLabels,
+    MBXSettingsMiscellaneousLocalizeLabels, // TODO: Move to ios-sdk-examples
     MBXSettingsMiscellaneousShowSnapshots,
     MBXSettingsMiscellaneousShouldLimitCameraChanges,
     MBXSettingsMiscellaneousShowCustomLocationManager,
@@ -427,7 +426,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
             break;
         case MBXSettingsRuntimeStyling:
             [settingsTitles addObjectsFromArray:@[
-                @"Add Route Line",
                 @"Add Lime Green Triangle Layer",
                 @"Dynamically Style Polygon",
                 @"Add Custom Lat/Lon Grid",
@@ -435,7 +433,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
             break;
         case MBXSettingsMiscellaneous:
             [settingsTitles addObjectsFromArray:@[
-                @"Start World Tour",
                 @"Random Tour",
                 @"Embedded Map View",
                 [NSString stringWithFormat:@"%@ Second Map", ([self.view viewWithTag:2] == nil ? @"Show" : @"Hide")],
@@ -566,16 +563,12 @@ CLLocationCoordinate2D randomWorldCoordinate() {
         case MBXSettingsMiscellaneous:
             switch (indexPath.row)
             {
-                case MBXSettingsMiscellaneousLocalizeLabels:
+                case MBXSettingsMiscellaneousLocalizeLabels: // TODO: Move to ios-sdk-examples
                     [self toggleStyleLabelsLanguage];
-                    break;
-                case MBXSettingsMiscellaneousWorldTour:
-                    [self startWorldTour];
                     break;
                 case MBXSettingsMiscellaneousRandomTour:
                     [self randomWorldTour];
                     break;
-
                 case MBXSettingsMiscellaneousPrintLogFile:
                     [self printTelemetryLogFile];
                     break;
@@ -743,7 +736,7 @@ CLLocationCoordinate2D randomWorldCoordinate() {
     }
 }
 
--(void)toggleStyleLabelsLanguage
+-(void)toggleStyleLabelsLanguage // TODO: Move to ios-sdk-examples
 {
     _localizingLabels = !_localizingLabels;
     [self.mapView.style localizeLabelsIntoLocale:_localizingLabels ? [NSLocale localeWithLocaleIdentifier:@"mul"] : nil];
@@ -794,6 +787,7 @@ CLLocationCoordinate2D randomWorldCoordinate() {
     [self.mapView.style addLayer:fillStyleLayer];
 }
 
+// TODO: Move to ios-sdk-examples
 - (void)addLatLonGrid
 {
     MGLComputedShapeSource *source = [[MGLComputedShapeSource alloc] initWithIdentifier:@"latlon"
@@ -1491,7 +1485,7 @@ CLLocationCoordinate2D randomWorldCoordinate() {
 }
 
 #pragma mark - MGLComputedShapeSourceDataSource
-
+// TODO: Move to ios-sdk-examples
 - (NSArray<id <MGLFeature>>*)featuresInCoordinateBounds:(MGLCoordinateBounds)bounds zoomLevel:(NSUInteger)zoom {
     double gridSpacing;
     if(zoom >= 13) {
