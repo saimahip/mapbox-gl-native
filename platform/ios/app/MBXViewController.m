@@ -51,7 +51,6 @@ typedef NS_ENUM(NSInteger, MBXSettingsAnnotationsRows) {
     MBXSettingsAddAnnotations = 0,
     MBXSettingsAddSymbols,
     MBXSettingsAnnotationAnimation,
-    MBXSettingsAnnotationsCustomUserDot,
     MBXSettingsAnnotationsRemoveAnnotations,
     MBXSettingsAnnotationSelectRandomOffscreenPointAnnotation,
     MBXSettingsAnnotationCenterSelectedAnnotation,
@@ -59,13 +58,6 @@ typedef NS_ENUM(NSInteger, MBXSettingsAnnotationsRows) {
 };
 
 typedef NS_ENUM(NSInteger, MBXSettingsRuntimeStylingRows) {
-    MBXSettingsRuntimeStylingWater = 0,
-    MBXSettingsRuntimeStylingStyleQuery,
-    MBXSettingsRuntimeStylingFeatureSource,
-    MBXSettingsRuntimeStylingVectorTileSource,
-    MBXSettingsRuntimeStylingRasterTileSource,
-    MBXSettingsRuntimeStylingImageSource,
-    MBXSettingsRuntimeStylingRouteLine,
     MBXSettingsRuntimeStylingAddLimeGreenTriangleLayer,
     MBXSettingsRuntimeStylingDDSPolygon,
     MBXSettingsRuntimeStylingCustomLatLonGrid,
@@ -557,9 +549,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
         case MBXSettingsRuntimeStyling:
             switch (indexPath.row)
             {
-                case MBXSettingsRuntimeStylingRouteLine:
-                    [self styleRouteLine];
-                    break;
                 case MBXSettingsRuntimeStylingAddLimeGreenTriangleLayer:
                     [self styleAddLimeGreenTriangleLayer];
                     break;
@@ -758,44 +747,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
 {
     _localizingLabels = !_localizingLabels;
     [self.mapView.style localizeLabelsIntoLocale:_localizingLabels ? [NSLocale localeWithLocaleIdentifier:@"mul"] : nil];
-}
-
-- (void)styleRouteLine
-{
-    CLLocationCoordinate2D coords[] = {
-        { 43.84455590478528, 10.504238605499268 },
-        { 43.84385562343126, 10.504125952720642 },
-        { 43.84388657526694, 10.503299832344055 },
-        { 43.84332557075269, 10.503235459327698 },
-        { 43.843441641085036, 10.502264499664307 },
-        { 43.84396395478592, 10.50242006778717 },
-        { 43.84406067904351, 10.501744151115416 },
-        { 43.84422317544319, 10.501792430877686 }
-    };
-    NSInteger count = sizeof(coords) / sizeof(coords[0]);
-
-    [self.mapView setCenterCoordinate:coords[0] zoomLevel:16 animated:YES];
-
-    MGLPolylineFeature *routeLine = [MGLPolylineFeature polylineWithCoordinates:coords count:count];
-
-    MGLShapeSource *routeSource = [[MGLShapeSource alloc] initWithIdentifier:@"style-route-source" shape:routeLine options:nil];
-    [self.mapView.style addSource:routeSource];
-
-    MGLLineStyleLayer *baseRouteLayer = [[MGLLineStyleLayer alloc] initWithIdentifier:@"style-base-route-layer" source:routeSource];
-    baseRouteLayer.lineColor = [NSExpression expressionForConstantValue:[UIColor orangeColor]];
-    baseRouteLayer.lineWidth = [NSExpression expressionForConstantValue:@20];
-    baseRouteLayer.lineOpacity = [NSExpression expressionForConstantValue:@0.5];
-    baseRouteLayer.lineCap = [NSExpression expressionForConstantValue:@"round"];
-    baseRouteLayer.lineJoin = [NSExpression expressionForConstantValue:@"round"];
-    [self.mapView.style addLayer:baseRouteLayer];
-
-    MGLLineStyleLayer *routeLayer = [[MGLLineStyleLayer alloc] initWithIdentifier:@"style-route-layer" source:routeSource];
-    routeLayer.lineColor = [NSExpression expressionForConstantValue:[UIColor whiteColor]];
-    routeLayer.lineWidth = [NSExpression expressionForConstantValue:@15];
-    routeLayer.lineOpacity = [NSExpression expressionForConstantValue:@0.8];
-    routeLayer.lineCap = [NSExpression expressionForConstantValue:@"round"];
-    routeLayer.lineJoin = [NSExpression expressionForConstantValue:@"round"];
-    [self.mapView.style addLayer:routeLayer];
 }
 
 - (void)styleAddLimeGreenTriangleLayer
