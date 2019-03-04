@@ -60,7 +60,6 @@ typedef NS_ENUM(NSInteger, MBXSettingsAnnotationsRows) {
 
 typedef NS_ENUM(NSInteger, MBXSettingsRuntimeStylingRows) {
     MBXSettingsRuntimeStylingWater = 0,
-    MBXSettingsRuntimeStylingRaster,
     MBXSettingsRuntimeStylingShape,
     MBXSettingsRuntimeStylingSymbols,
     MBXSettingsRuntimeStylingFerry,
@@ -448,7 +447,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
         case MBXSettingsRuntimeStyling:
             [settingsTitles addObjectsFromArray:@[
                 @"Style Water With Function",
-                @"Add Raster & Apply Function",
                 @"Add Shapes & Apply Fill",
                 @"Style Symbol Color",
                 @"Style Building Fill Color",
@@ -464,7 +462,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
                 @"Update Shape Source: URL",
                 @"Update Shape Source: Features",
                 @"Style Vector Tile Source",
-                @"Style Raster Tile Source",
                 @"Style Image Source",
                 @"Add Route Line",
                 @"Add Lime Green Triangle Layer",
@@ -591,9 +588,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
                 case MBXSettingsRuntimeStylingWater:
                     [self styleWaterLayer];
                     break;
-                case MBXSettingsRuntimeStylingRaster:
-                    [self styleRasterLayer];
-                    break;
                 case MBXSettingsRuntimeStylingShape:
                     [self styleShapeSource];
                     break;
@@ -635,9 +629,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
                     break;
                 case MBXSettingsRuntimeStylingVectorTileSource:
                     [self styleVectorTileSource];
-                    break;
-                case MBXSettingsRuntimeStylingRasterTileSource:
-                    [self styleRasterTileSource];
                     break;
                 case MBXSettingsRuntimeStylingImageSource:
                     [self styleImageSource];
@@ -851,21 +842,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
     waterLayer.fillAntialiased = [NSExpression mgl_expressionForSteppingExpression:NSExpression.zoomLevelVariableExpression
                                                                     fromExpression:[NSExpression expressionForConstantValue:@NO]
                                                                              stops:[NSExpression expressionForConstantValue:fillAntialiasedStops]];
-}
-
-- (void)styleRasterLayer
-{
-    NSURL *rasterURL = [NSURL URLWithString:@"mapbox://mapbox.satellite"];
-    MGLRasterTileSource *rasterTileSource = [[MGLRasterTileSource alloc] initWithIdentifier:@"my-raster-tile-source" configurationURL:rasterURL tileSize:512];
-    [self.mapView.style addSource:rasterTileSource];
-
-    MGLRasterStyleLayer *rasterLayer = [[MGLRasterStyleLayer alloc] initWithIdentifier:@"my-raster-layer" source:rasterTileSource];
-    NSDictionary *opacityStops = @{@20.0f: @1.0f,
-                                   @5.0f: @0.0f};
-    rasterLayer.rasterOpacity = [NSExpression expressionWithFormat:
-                                 @"mgl_interpolate:withCurveType:parameters:stops:($zoomLevel, 'linear', nil, %@)",
-                                 opacityStops];
-    [self.mapView.style addLayer:rasterLayer];
 }
 
 - (void)styleShapeSource
@@ -1196,18 +1172,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
     lineLayer.lineColor = [NSExpression expressionForConstantValue:[UIColor greenColor]];
 
     [self.mapView.style addLayer:lineLayer];
-}
-
-- (void)styleRasterTileSource
-{
-    NSString *tileURL = [NSString stringWithFormat:@"https://stamen-tiles.a.ssl.fastly.net/terrain-background/{z}/{x}/{y}%@.jpg", UIScreen.mainScreen.nativeScale > 1 ? @"@2x" : @""];
-    MGLRasterTileSource *rasterTileSource = [[MGLRasterTileSource alloc] initWithIdentifier:@"style-raster-tile-source-id" tileURLTemplates:@[tileURL] options:@{
-        MGLTileSourceOptionTileSize: @256,
-    }];
-    [self.mapView.style addSource:rasterTileSource];
-
-    MGLRasterStyleLayer *rasterLayer = [[MGLRasterStyleLayer alloc] initWithIdentifier:@"style-raster-layer-id" source:rasterTileSource];
-    [self.mapView.style addLayer:rasterLayer];
 }
 
 - (void)styleImageSource
