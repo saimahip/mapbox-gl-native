@@ -435,9 +435,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
             break;
         case MBXSettingsRuntimeStyling:
             [settingsTitles addObjectsFromArray:@[
-                @"Style Water With Function",
-                @"Style Vector Tile Source",
-                @"Style Image Source",
                 @"Add Route Line",
                 @"Add Lime Green Triangle Layer",
                 @"Dynamically Style Polygon",
@@ -560,15 +557,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
         case MBXSettingsRuntimeStyling:
             switch (indexPath.row)
             {
-                case MBXSettingsRuntimeStylingWater:
-                    [self styleWaterLayer];
-                    break;
-                case MBXSettingsRuntimeStylingVectorTileSource:
-                    [self styleVectorTileSource];
-                    break;
-                case MBXSettingsRuntimeStylingImageSource:
-                    [self styleImageSource];
-                    break;
                 case MBXSettingsRuntimeStylingRouteLine:
                     [self styleRouteLine];
                     break;
@@ -755,72 +743,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
             }];
         });
     };
-
-- (void)styleWaterLayer
-{
-    MGLFillStyleLayer *waterLayer = (MGLFillStyleLayer *)[self.mapView.style layerWithIdentifier:@"water"];
-    NSDictionary *waterColorStops = @{@6.0f: [UIColor yellowColor],
-                                      @8.0f: [UIColor blueColor],
-                                      @10.0f: [UIColor redColor],
-                                      @12.0f: [UIColor greenColor],
-                                      @14.0f: [UIColor blueColor]};
-    NSExpression *fillColorExpression = [NSExpression mgl_expressionForInterpolatingExpression:NSExpression.zoomLevelVariableExpression
-                                                                                 withCurveType:MGLExpressionInterpolationModeLinear
-                                                                                    parameters:nil
-                                                                                         stops:[NSExpression expressionForConstantValue:waterColorStops]];
-    waterLayer.fillColor = fillColorExpression;
-
-    NSDictionary *fillAntialiasedStops = @{@11: @YES,
-                                           @12: @NO,
-                                           @13: @YES,
-                                           @14: @NO,
-                                           @15: @YES};
-    waterLayer.fillAntialiased = [NSExpression mgl_expressionForSteppingExpression:NSExpression.zoomLevelVariableExpression
-                                                                    fromExpression:[NSExpression expressionForConstantValue:@NO]
-                                                                             stops:[NSExpression expressionForConstantValue:fillAntialiasedStops]];
-}
-
-- (void)styleVectorTileSource
-{
-    NSURL *url = [[NSURL alloc] initWithString:@"mapbox://mapbox.mapbox-terrain-v2"];
-    MGLVectorTileSource *vectorTileSource = [[MGLVectorTileSource alloc] initWithIdentifier:@"style-vector-tile-source-id" configurationURL:url];
-    [self.mapView.style addSource:vectorTileSource];
-
-    MGLBackgroundStyleLayer *backgroundLayer = [[MGLBackgroundStyleLayer alloc] initWithIdentifier:@"style-vector-background-layer-id"];
-    backgroundLayer.backgroundColor = [NSExpression expressionForConstantValue:[UIColor blackColor]];
-    [self.mapView.style addLayer:backgroundLayer];
-
-    MGLLineStyleLayer *lineLayer = [[MGLLineStyleLayer alloc] initWithIdentifier:@"style-vector-line-layer-id" source:vectorTileSource];
-    lineLayer.sourceLayerIdentifier = @"contour";
-    lineLayer.lineJoin = [NSExpression expressionForConstantValue:@"round"];
-    lineLayer.lineCap = [NSExpression expressionForConstantValue:@"round"];
-    lineLayer.lineColor = [NSExpression expressionForConstantValue:[UIColor greenColor]];
-
-    [self.mapView.style addLayer:lineLayer];
-}
-
-- (void)styleImageSource
-{
-    MGLCoordinateQuad coordinateQuad = {
-        { 46.437, -80.425 },
-        { 37.936, -80.425 },
-        { 37.936, -71.516 },
-        { 46.437, -71.516 } };
-
-    MGLImageSource *imageSource = [[MGLImageSource alloc] initWithIdentifier:@"style-image-source-id" coordinateQuad:coordinateQuad URL:[NSURL URLWithString:@"https://www.mapbox.com/mapbox-gl-js/assets/radar0.gif"]];
-
-    [self.mapView.style addSource:imageSource];
-    
-    MGLRasterStyleLayer *rasterLayer = [[MGLRasterStyleLayer alloc] initWithIdentifier:@"style-raster-image-layer-id" source:imageSource];
-    [self.mapView.style addLayer:rasterLayer];
-    
-    [NSTimer scheduledTimerWithTimeInterval:1.0
-                                     target:self
-                                   selector:@selector(updateAnimatedImageSource:)
-                                   userInfo:imageSource
-                                    repeats:YES];
-}
-
 
 - (void)updateAnimatedImageSource:(NSTimer *)timer {
     static int radarSuffix = 0;
