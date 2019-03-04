@@ -60,7 +60,6 @@ typedef NS_ENUM(NSInteger, MBXSettingsAnnotationsRows) {
 
 typedef NS_ENUM(NSInteger, MBXSettingsRuntimeStylingRows) {
     MBXSettingsRuntimeStylingWater = 0,
-    MBXSettingsRuntimeStylingRoads,
     MBXSettingsRuntimeStylingRaster,
     MBXSettingsRuntimeStylingShape,
     MBXSettingsRuntimeStylingSymbols,
@@ -449,7 +448,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
         case MBXSettingsRuntimeStyling:
             [settingsTitles addObjectsFromArray:@[
                 @"Style Water With Function",
-                @"Style Roads With Function",
                 @"Add Raster & Apply Function",
                 @"Add Shapes & Apply Fill",
                 @"Style Symbol Color",
@@ -592,9 +590,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
             {
                 case MBXSettingsRuntimeStylingWater:
                     [self styleWaterLayer];
-                    break;
-                case MBXSettingsRuntimeStylingRoads:
-                    [self styleRoadLayer];
                     break;
                 case MBXSettingsRuntimeStylingRaster:
                     [self styleRasterLayer];
@@ -856,32 +851,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
     waterLayer.fillAntialiased = [NSExpression mgl_expressionForSteppingExpression:NSExpression.zoomLevelVariableExpression
                                                                     fromExpression:[NSExpression expressionForConstantValue:@NO]
                                                                              stops:[NSExpression expressionForConstantValue:fillAntialiasedStops]];
-}
-
-- (void)styleRoadLayer
-{
-    MGLLineStyleLayer *roadLayer = (MGLLineStyleLayer *)[self.mapView.style layerWithIdentifier:@"road-primary"];
-    roadLayer.lineColor = [NSExpression expressionForConstantValue:[UIColor blackColor]];
-
-    NSDictionary *lineWidthStops = @{@5: @5,
-                                     @10: @15,
-                                     @15: @30};
-    NSExpression *lineWidthExpression = [NSExpression expressionWithFormat:
-                                         @"mgl_interpolate:withCurveType:parameters:stops:($zoomLevel, 'linear', nil, %@)",
-                                         lineWidthStops];
-    roadLayer.lineWidth = lineWidthExpression;
-    roadLayer.lineGapWidth = lineWidthExpression;
-
-    NSDictionary *roadLineColorStops = @{@10: [UIColor purpleColor],
-                                         @13: [UIColor yellowColor],
-                                         @16: [UIColor cyanColor]};
-    roadLayer.lineColor = [NSExpression expressionWithFormat:
-                           @"mgl_interpolate:withCurveType:parameters:stops:($zoomLevel, 'linear', nil, %@)",
-                           roadLineColorStops];
-
-    roadLayer.visible = YES;
-    roadLayer.maximumZoomLevel = 15;
-    roadLayer.minimumZoomLevel = 13;
 }
 
 - (void)styleRasterLayer
