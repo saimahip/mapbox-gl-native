@@ -447,7 +447,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
         case MBXSettingsRuntimeStyling:
             [settingsTitles addObjectsFromArray:@[
                 @"Style Water With Function",
-                @"Add Shapes & Apply Fill",
                 @"Style Symbol Color",
                 @"Style Building Fill Color",
                 @"Style Ferry Line Color",
@@ -587,9 +586,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
             {
                 case MBXSettingsRuntimeStylingWater:
                     [self styleWaterLayer];
-                    break;
-                case MBXSettingsRuntimeStylingShape:
-                    [self styleShapeSource];
                     break;
                 case MBXSettingsRuntimeStylingSymbols:
                     [self styleSymbolLayer];
@@ -842,19 +838,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
     waterLayer.fillAntialiased = [NSExpression mgl_expressionForSteppingExpression:NSExpression.zoomLevelVariableExpression
                                                                     fromExpression:[NSExpression expressionForConstantValue:@NO]
                                                                              stops:[NSExpression expressionForConstantValue:fillAntialiasedStops]];
-}
-
-- (void)styleShapeSource
-{
-    NSString *filePath = [[NSBundle bundleForClass:self.class] pathForResource:@"amsterdam" ofType:@"geojson"];
-    NSURL *geoJSONURL = [NSURL fileURLWithPath:filePath];
-    MGLShapeSource *source = [[MGLShapeSource alloc] initWithIdentifier:@"ams" URL:geoJSONURL options:nil];
-    [self.mapView.style addSource:source];
-
-    MGLFillStyleLayer *fillLayer = [[MGLFillStyleLayer alloc] initWithIdentifier:@"test" source:source];
-    fillLayer.fillColor = [NSExpression expressionForConstantValue:[UIColor purpleColor]];
-    [self.mapView.style addLayer:fillLayer];
-
 }
 
 - (void)styleSymbolLayer

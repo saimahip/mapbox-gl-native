@@ -115,8 +115,6 @@
 		353AFA151D65AB17005A69F4 /* NSDate+MGLAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 353AFA121D65AB17005A69F4 /* NSDate+MGLAdditions.h */; };
 		353AFA161D65AB17005A69F4 /* NSDate+MGLAdditions.mm in Sources */ = {isa = PBXBuildFile; fileRef = 353AFA131D65AB17005A69F4 /* NSDate+MGLAdditions.mm */; };
 		353AFA171D65AB17005A69F4 /* NSDate+MGLAdditions.mm in Sources */ = {isa = PBXBuildFile; fileRef = 353AFA131D65AB17005A69F4 /* NSDate+MGLAdditions.mm */; };
-		353BAEF61D646370009A8DA9 /* amsterdam.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 353BAEF51D646370009A8DA9 /* amsterdam.geojson */; };
-		353BAEF71D646370009A8DA9 /* amsterdam.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 353BAEF51D646370009A8DA9 /* amsterdam.geojson */; };
 		353D23961D0B0DFE002BE09D /* MGLAnnotationViewTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 353D23951D0B0DFE002BE09D /* MGLAnnotationViewTests.m */; };
 		354B83961D2E873E005D9406 /* MGLUserLocationAnnotationView.h in Headers */ = {isa = PBXBuildFile; fileRef = 354B83941D2E873E005D9406 /* MGLUserLocationAnnotationView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		354B83971D2E873E005D9406 /* MGLUserLocationAnnotationView.h in Headers */ = {isa = PBXBuildFile; fileRef = 354B83941D2E873E005D9406 /* MGLUserLocationAnnotationView.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -909,7 +907,6 @@
 		353933FD1D3FB7DD003F57D7 /* MGLSymbolStyleLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGLSymbolStyleLayer.h; sourceTree = "<group>"; };
 		353AFA121D65AB17005A69F4 /* NSDate+MGLAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDate+MGLAdditions.h"; sourceTree = "<group>"; };
 		353AFA131D65AB17005A69F4 /* NSDate+MGLAdditions.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "NSDate+MGLAdditions.mm"; sourceTree = "<group>"; };
-		353BAEF51D646370009A8DA9 /* amsterdam.geojson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = amsterdam.geojson; path = ../../darwin/test/amsterdam.geojson; sourceTree = "<group>"; };
 		353D23951D0B0DFE002BE09D /* MGLAnnotationViewTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGLAnnotationViewTests.m; sourceTree = "<group>"; };
 		354B83941D2E873E005D9406 /* MGLUserLocationAnnotationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGLUserLocationAnnotationView.h; sourceTree = "<group>"; };
 		354B83951D2E873E005D9406 /* MGLUserLocationAnnotationView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGLUserLocationAnnotationView.m; sourceTree = "<group>"; };
@@ -1857,7 +1854,6 @@
 		9604FC341F313A5E003EEA02 /* Fixtures */ = {
 			isa = PBXGroup;
 			children = (
-				353BAEF51D646370009A8DA9 /* amsterdam.geojson */,
 				DA1DC96C1CB6C6CE006E619F /* points.geojson */,
 				DA1DC96D1CB6C6CE006E619F /* polyline.geojson */,
 				1F26B6C220E1A351007BCC21 /* simple_route.json */,
@@ -2969,7 +2965,6 @@
 			files = (
 				DD4823771D94AE6C00EB71B7 /* numeric_filter_style.json in Resources */,
 				DA1DC9701CB6C6CE006E619F /* points.geojson in Resources */,
-				353BAEF61D646370009A8DA9 /* amsterdam.geojson in Resources */,
 				DA1DC9711CB6C6CE006E619F /* polyline.geojson in Resources */,
 				DD4823761D94AE6C00EB71B7 /* line_filter_style.json in Resources */,
 				076171C72141A91700668A35 /* Settings.bundle in Resources */,
@@ -2989,7 +2984,6 @@
 			files = (
 				DA2784FC1DF02FF4001D5B8D /* Media.xcassets in Resources */,
 				1F8A59F72165326D004DFE75 /* sideload_sat.db in Resources */,
-				353BAEF71D646370009A8DA9 /* amsterdam.geojson in Resources */,
 				DA35D0881E1A6309007DED41 /* one-liner.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
