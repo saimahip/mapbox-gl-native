@@ -59,13 +59,11 @@ typedef NS_ENUM(NSInteger, MBXSettingsAnnotationsRows) {
 };
 
 typedef NS_ENUM(NSInteger, MBXSettingsRuntimeStylingRows) {
-    MBXSettingsRuntimeStylingBuildingExtrusions = 0,
-    MBXSettingsRuntimeStylingWater,
+    MBXSettingsRuntimeStylingWater = 0,
     MBXSettingsRuntimeStylingRoads,
     MBXSettingsRuntimeStylingRaster,
     MBXSettingsRuntimeStylingShape,
     MBXSettingsRuntimeStylingSymbols,
-    MBXSettingsRuntimeStylingBuildings,
     MBXSettingsRuntimeStylingFerry,
     MBXSettingsRuntimeStylingParks,
     MBXSettingsRuntimeStylingFilteredFill,
@@ -450,7 +448,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
             break;
         case MBXSettingsRuntimeStyling:
             [settingsTitles addObjectsFromArray:@[
-                @"Add Building Extrusions",
                 @"Style Water With Function",
                 @"Style Roads With Function",
                 @"Add Raster & Apply Function",
@@ -570,9 +567,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
                 case MBXSettingsAnnotationAnimation:
                     [self animateAnnotationView];
                     break;
-                case MBXSettingsAnnotationsCustomUserDot:
-                    [self toggleCustomUserDot];
-                    break;
                 case MBXSettingsAnnotationsRemoveAnnotations:
                     [self.mapView removeAnnotations:self.mapView.annotations];
                     break;
@@ -596,9 +590,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
         case MBXSettingsRuntimeStyling:
             switch (indexPath.row)
             {
-                case MBXSettingsRuntimeStylingBuildingExtrusions:
-                    [self styleBuildingExtrusions];
-                    break;
                 case MBXSettingsRuntimeStylingWater:
                     [self styleWaterLayer];
                     break;
@@ -613,9 +604,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
                     break;
                 case MBXSettingsRuntimeStylingSymbols:
                     [self styleSymbolLayer];
-                    break;
-                case MBXSettingsRuntimeStylingBuildings:
-                    [self styleBuildingLayer];
                     break;
                 case MBXSettingsRuntimeStylingFerry:
                     [self styleFerryLayer];
@@ -845,38 +833,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
             }];
         });
     };
-
-- (void)styleBuildingExtrusions
-{
-    MGLSource* source = [self.mapView.style sourceWithIdentifier:@"composite"];
-    if (source) {
-
-        MGLFillExtrusionStyleLayer* layer = [[MGLFillExtrusionStyleLayer alloc] initWithIdentifier:@"extrudedBuildings" source:source];
-        layer.sourceLayerIdentifier = @"building";
-        layer.predicate = [NSPredicate predicateWithFormat:@"extrude == 'true' AND CAST(height, 'NSNumber') > 0"];
-        layer.fillExtrusionBase = [NSExpression expressionForKeyPath:@"min_height"];
-        layer.fillExtrusionHeight = [NSExpression expressionForKeyPath:@"height"];
-
-        // Set the fill color to that of the existing building footprint layer, if it exists.
-        MGLFillStyleLayer* buildingLayer = (MGLFillStyleLayer*)[self.mapView.style layerWithIdentifier:@"building"];
-        if (buildingLayer) {
-            if (buildingLayer.fillColor) {
-                layer.fillExtrusionColor = buildingLayer.fillColor;
-            } else {
-                layer.fillExtrusionColor = [NSExpression expressionForConstantValue:[UIColor whiteColor]];
-            }
-
-            layer.fillExtrusionOpacity = [NSExpression expressionForConstantValue:@0.75];
-        }
-
-        MGLStyleLayer* labelLayer = [self.mapView.style layerWithIdentifier:@"waterway-label"];
-        if (labelLayer) {
-            [self.mapView.style insertLayer:layer belowLayer:labelLayer];
-        } else {
-            [self.mapView.style addLayer:layer];
-        }
-    }
-}
 
 - (void)styleWaterLayer
 {
@@ -1990,21 +1946,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
     [UIView animateWithDuration:0.25 animations:^{
         self.navigationItem.rightBarButtonItem.image = newButtonImage;
     }];
-}
-
-- (nullable id <MGLCalloutView>)mapView:(__unused MGLMapView *)mapView calloutViewForAnnotation:(id<MGLAnnotation>)annotation
-{
-    if ([annotation respondsToSelector:@selector(title)]
-        && [annotation isKindOfClass:[MBXCustomCalloutAnnotation class]])
-    {
-        MBXCustomCalloutAnnotation *customAnnotation = (MBXCustomCalloutAnnotation *)annotation;
-        MBXCustomCalloutView *calloutView = [[MBXCustomCalloutView alloc] init];
-        calloutView.representedObject = annotation;
-        calloutView.anchoredToAnnotation = customAnnotation.anchoredToAnnotation;
-        calloutView.dismissesAutomatically = customAnnotation.dismissesAutomatically;
-        return calloutView;
-    }
-    return nil;
 }
 
 - (UIView *)mapView:(__unused MGLMapView *)mapView leftCalloutAccessoryViewForAnnotation:(__unused id<MGLAnnotation>)annotation
