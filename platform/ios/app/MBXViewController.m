@@ -13,19 +13,6 @@
 
 #import <objc/runtime.h>
 
-static const CLLocationCoordinate2D WorldTourDestinations[] = {
-    { .latitude = 38.8999418, .longitude = -77.033996 },
-    { .latitude = 37.7884307, .longitude = -122.3998631 },
-    { .latitude = 52.5003103, .longitude = 13.4197763 },
-    { .latitude = 60.1712627, .longitude = 24.9378866 },
-    { .latitude = 53.8948782, .longitude = 27.5558476 },
-};
-
-static const MGLCoordinateBounds colorado = {
-    .sw = { .latitude = 36.986207, .longitude = -109.049896},
-    .ne = { .latitude = 40.989329, .longitude = -102.062592},
-};
-
 static NSString * const MBXViewControllerAnnotationViewReuseIdentifer = @"MBXViewControllerAnnotationViewReuseIdentifer";
 
 typedef NS_ENUM(NSInteger, MBXSettingsSections) {
@@ -50,7 +37,7 @@ typedef NS_ENUM(NSInteger, MBXSettingsDebugToolsRows) {
 typedef NS_ENUM(NSInteger, MBXSettingsAnnotationsRows) {
     MBXSettingsAddAnnotations = 0,
     MBXSettingsAddSymbols,
-    MBXSettingsAnnotationAnimation,
+    MBXSettingsAnnotationAnimation, // TODO: Move to ios-sdk-examples
     MBXSettingsAnnotationsRemoveAnnotations,
     MBXSettingsAnnotationSelectRandomOffscreenPointAnnotation,
     MBXSettingsAnnotationCenterSelectedAnnotation,
@@ -133,22 +120,10 @@ CLLocationCoordinate2D randomWorldCoordinate() {
     return newLocation;
 }
 
-
-
-
-
 @interface MBXDroppedPinAnnotation : MGLPointAnnotation
 @end
 
 @implementation MBXDroppedPinAnnotation
-@end
-
-@interface MBXCustomCalloutAnnotation : MGLPointAnnotation
-@property (nonatomic, assign) BOOL anchoredToAnnotation;
-@property (nonatomic, assign) BOOL dismissesAutomatically;
-@end
-
-@implementation MBXCustomCalloutAnnotation
 @end
 
 @interface MBXSpriteBackedAnnotation : MGLPointAnnotation
@@ -217,38 +192,29 @@ CLLocationCoordinate2D randomWorldCoordinate() {
     self.mapView.experimental_enableFrameRateMeasurement = YES;
     self.hudLabel.titleLabel.font = [UIFont monospacedDigitSystemFontOfSize:10 weight:UIFontWeightRegular];
 
-    if ([MGLAccountManager accessToken].length)
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Access Token" message:@"Enter your Mapbox access token to load Mapbox-hosted tiles and styles:" preferredStyle:UIAlertControllerStyleAlert];
+    [alertController addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField)
+     {
+         textField.keyboardType = UIKeyboardTypeURL;
+         textField.autocorrectionType = UITextAutocorrectionTypeNo;
+         textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
+     }];
+
+    [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
+    UIAlertAction *OKAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action)
     {
+        UITextField *textField = alertController.textFields.firstObject;
+        NSString *accessToken = textField.text;
+        [[NSUserDefaults standardUserDefaults] setObject:accessToken forKey:MBXMapboxAccessTokenDefaultsKey];
+        [MGLAccountManager setAccessToken:accessToken];
+
         self.styleIndex = -1;
-        [self cycleStyles:self];
-    }
-    else
-    {
-        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Access Token" message:@"Enter your Mapbox access token to load Mapbox-hosted tiles and styles:" preferredStyle:UIAlertControllerStyleAlert];
-        [alertController addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField)
-         {
-             textField.keyboardType = UIKeyboardTypeURL;
-             textField.autocorrectionType = UITextAutocorrectionTypeNo;
-             textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
-         }];
+        [self.mapView reloadStyle:self];
+    }];
+    [alertController addAction:OKAction];
+    alertController.preferredAction = OKAction;
 
-        [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
-        UIAlertAction *OKAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action)
-        {
-            UITextField *textField = alertController.textFields.firstObject;
-            NSString *accessToken = textField.text;
-            [[NSUserDefaults standardUserDefaults] setObject:accessToken forKey:MBXMapboxAccessTokenDefaultsKey];
-            [MGLAccountManager setAccessToken:accessToken];
-
-            self.styleIndex = -1;
-            [self cycleStyles:self];
-            [self.mapView reloadStyle:self];
-        }];
-        [alertController addAction:OKAction];
-        alertController.preferredAction = OKAction;
-
-        [self presentViewController:alertController animated:YES completion:nil];
-    }
+    [self presentViewController:alertController animated:YES completion:nil];
 
     // Add fall-through single tap gesture recognizer. This will be called when
     // the map view's tap recognizers fail.
@@ -433,9 +399,7 @@ CLLocationCoordinate2D randomWorldCoordinate() {
                 @"Random Tour",
                 @"Embedded Map View",
                 [NSString stringWithFormat:@"%@ Second Map", ([self.view viewWithTag:2] == nil ? @"Show" : @"Hide")],
-                [NSString stringWithFormat:@"Show Labels in %@", (_localizingLabels ? @"Default Language" : [[NSLocale currentLocale] displayNameForKey:NSLocaleIdentifier value:[self bestLanguageForUser]])],
-                @"Show Snapshots",
-                @"View Route Simulation",
+                [NSString stringWithFormat:@"Show Labels in %@", (_localizingLabels ? @"Default Language" : [[NSLocale currentLocale] displayNameForKey:NSLocaleIdentifier value:[self bestLanguageForUser]])]
             ]];
 
             if (self.debugLoggingEnabled)
@@ -544,9 +508,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
             {
                 case MBXSettingsRuntimeStylingAddLimeGreenTriangleLayer:
                     [self styleAddLimeGreenTriangleLayer];
-                    break;
-                case MBXSettingsRuntimeStylingDDSPolygon:
-                    [self stylePolygonWithDDS];
                     break;
                 case MBXSettingsRuntimeStylingCustomLatLonGrid:
                     [self addLatLonGrid];
@@ -709,16 +670,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
         });
     };
 
-- (void)updateAnimatedImageSource:(NSTimer *)timer {
-    static int radarSuffix = 0;
-    MGLImageSource *imageSource = (MGLImageSource *)timer.userInfo;
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"https://www.mapbox.com/mapbox-gl-js/assets/radar%d.gif", radarSuffix++]];
-    [imageSource setValue:url forKey:@"URL"];
-    if (radarSuffix > 3) {
-        radarSuffix = 0;
-    }
-}
-
 -(void)toggleStyleLabelsLanguage // TODO: Move to ios-sdk-examples
 {
     _localizingLabels = !_localizingLabels;
@@ -729,45 +680,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
 {
     LimeGreenStyleLayer *layer = [[LimeGreenStyleLayer alloc] initWithIdentifier:@"mbx-custom"];
     [self.mapView.style addLayer:layer];
-}
-
-- (void)stylePolygonWithDDS {
-    CLLocationCoordinate2D leftCoords[] = {
-        {37.73081027834234, -122.49412536621094},
-        {37.7566013348511, -122.49412536621094},
-        {37.7566013348511, -122.46253967285156},
-        {37.73081027834234, -122.46253967285156},
-        {37.73081027834234, -122.49412536621094},
-    };
-    CLLocationCoordinate2D rightCoords[] = {
-        {37.73135334055843, -122.44640350341795},
-        {37.75741564287944, -122.44640350341795},
-        {37.75741564287944, -122.41310119628906},
-        {37.73135334055843, -122.41310119628906},
-        {37.73135334055843, -122.44640350341795},
-    };
-    MGLPolygonFeature *leftFeature = [MGLPolygonFeature polygonWithCoordinates:leftCoords count:5];
-    leftFeature.attributes = @{@"fill": @(YES)};
-
-    MGLPolygonFeature *rightFeature = [MGLPolygonFeature polygonWithCoordinates:rightCoords count:5];
-    rightFeature.attributes = @{@"opacity": @(0.5)};
-
-    MGLShapeSource *shapeSource = [[MGLShapeSource alloc] initWithIdentifier:@"shape-source" features:@[leftFeature, rightFeature] options:nil];
-    [self.mapView.style addSource:shapeSource];
-
-    // source, categorical function that sets any feature with a "fill" attribute value of true to red color and anything without to green
-    MGLFillStyleLayer *fillStyleLayer = [[MGLFillStyleLayer alloc] initWithIdentifier:@"fill-layer" source:shapeSource];
-    fillStyleLayer.fillColor = [NSExpression mgl_expressionForConditional:[NSPredicate predicateWithFormat:@"fill == YES"]
-                                                           trueExpression:[NSExpression expressionForConstantValue:[UIColor greenColor]]
-                                                         falseExpresssion:[NSExpression expressionForConstantValue:[UIColor redColor]]];
-                                                               
-    
-
-    // source, identity function that sets any feature with an "opacity" attribute to use that value and anything without to 1.0
-    fillStyleLayer.fillOpacity = [NSExpression mgl_expressionForConditional:[NSPredicate predicateWithFormat:@"opacity != nil"]
-                                                             trueExpression:[NSExpression expressionForKeyPath:@"opacity"] 
-                                                           falseExpresssion:[NSExpression expressionForConstantValue:@1.0]];
-    [self.mapView.style addLayer:fillStyleLayer];
 }
 
 // TODO: Move to ios-sdk-examples
@@ -802,46 +714,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
     }
 
     return mostSpecificLanguage ?: @"en";
-}
-
-- (IBAction)startWorldTour
-{
-    _isTouringWorld = YES;
-
-    [self.mapView removeAnnotations:self.mapView.annotations];
-    NSUInteger numberOfAnnotations = sizeof(WorldTourDestinations) / sizeof(WorldTourDestinations[0]);
-    NSMutableArray *annotations = [NSMutableArray arrayWithCapacity:numberOfAnnotations];
-    for (NSUInteger i = 0; i < numberOfAnnotations; i++)
-    {
-        MBXDroppedPinAnnotation *annotation = [[MBXDroppedPinAnnotation alloc] init];
-        annotation.coordinate = WorldTourDestinations[i];
-        [annotations addObject:annotation];
-    }
-    [self.mapView addAnnotations:annotations];
-    [self continueWorldTourWithRemainingAnnotations:annotations];
-}
-
-- (void)continueWorldTourWithRemainingAnnotations:(NSMutableArray<MGLPointAnnotation *> *)annotations
-{
-    MGLPointAnnotation *nextAnnotation = annotations.firstObject;
-    if (!nextAnnotation || !_isTouringWorld)
-    {
-        _isTouringWorld = NO;
-        return;
-    }
-
-    [annotations removeObjectAtIndex:0];
-    MGLMapCamera *camera = [MGLMapCamera cameraLookingAtCenterCoordinate:nextAnnotation.coordinate
-                                                          acrossDistance:10
-                                                                   pitch:arc4random_uniform(60)
-                                                                 heading:arc4random_uniform(360)];
-    __weak MBXViewController *weakSelf = self;
-    [self.mapView flyToCamera:camera completionHandler:^{
-        MBXViewController *strongSelf = weakSelf;
-        [strongSelf performSelector:@selector(continueWorldTourWithRemainingAnnotations:)
-                         withObject:annotations
-                         afterDelay:2];
-    }];
 }
 
 - (id<MGLAnnotation>)randomOffscreenPointAnnotation {
@@ -1127,58 +999,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
     }
 }
 
-- (IBAction)cycleStyles:(__unused id)sender
-{
-    static NSArray *styleNames;
-    static NSArray *styleURLs;
-
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        styleNames = @[
-            @"Streets",
-            @"Outdoors",
-            @"Light",
-            @"Dark",
-            @"Satellite",
-            @"Satellite Streets",
-        ];
-        styleURLs = @[
-            [MGLStyle streetsStyleURL],
-            [MGLStyle outdoorsStyleURL],
-            [MGLStyle lightStyleURL],
-            [MGLStyle darkStyleURL],
-            [MGLStyle satelliteStyleURL],
-            [MGLStyle satelliteStreetsStyleURL]
-        ];
-        NSAssert(styleNames.count == styleURLs.count, @"Style names and URLs don’t match.");
-
-        // Make sure defaultStyleURLs is up-to-date.
-        unsigned numMethods = 0;
-        Method *methods = class_copyMethodList(object_getClass([MGLStyle class]), &numMethods);
-        unsigned numStyleURLMethods = 0;
-        for (NSUInteger i = 0; i < numMethods; i++) {
-            Method method = methods[i];
-            if (method_getNumberOfArguments(method) == 3 /* _cmd, self, version */) {
-                SEL selector = method_getName(method);
-                NSString *name = @(sel_getName(selector));
-                if ([name hasSuffix:@"StyleURLWithVersion:"]) {
-                    numStyleURLMethods += 1;
-                }
-            }
-        }
-        NSAssert(numStyleURLMethods == styleNames.count,
-                 @"MGLStyle provides %u default styles but iosapp only knows about %lu of them.",
-                 numStyleURLMethods, (unsigned long)styleNames.count);
-    });
-
-    self.styleIndex = (self.styleIndex + 1) % styleNames.count;
-
-    self.mapView.styleURL = styleURLs[self.styleIndex];
-
-    UIButton *titleButton = (UIButton *)self.navigationItem.titleView;
-    [titleButton setTitle:styleNames[self.styleIndex] forState:UIControlStateNormal];
-}
-
 - (IBAction)locateUser:(id)sender
 {
     MGLUserTrackingMode nextMode;
@@ -1240,7 +1060,7 @@ CLLocationCoordinate2D randomWorldCoordinate() {
 
 - (MGLAnnotationImage *)mapView:(MGLMapView * __nonnull)mapView imageForAnnotation:(id <MGLAnnotation> __nonnull)annotation
 {
-    if ([annotation isKindOfClass:[MBXDroppedPinAnnotation class]] || [annotation isKindOfClass:[MBXCustomCalloutAnnotation class]])
+    if ([annotation isKindOfClass:[MBXDroppedPinAnnotation class]])
     {
         return nil; // use default marker
     }
