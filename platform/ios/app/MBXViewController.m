@@ -68,7 +68,6 @@ typedef NS_ENUM(NSInteger, MBXSettingsMiscellaneousRows) {
     MBXSettingsMiscellaneousScrollView,
     MBXSettingsMiscellaneousToggleTwoMaps,
     MBXSettingsMiscellaneousLocalizeLabels, // TODO: Move to ios-sdk-examples
-    MBXSettingsMiscellaneousShowSnapshots,
     MBXSettingsMiscellaneousShowCustomLocationManager,
     MBXSettingsMiscellaneousPrintLogFile,
     MBXSettingsMiscellaneousDeleteLogFile,
@@ -582,11 +581,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
                 case MBXSettingsMiscellaneousToggleTwoMaps:
                     [self toggleSecondMapView];
                     break;
-                case MBXSettingsMiscellaneousShowSnapshots:
-                {
-                    [self performSegueWithIdentifier:@"ShowSnapshots" sender:nil];
-                    break;
-                }
                 case MBXSettingsMiscellaneousShowCustomLocationManager:
                 {
                     [self performSegueWithIdentifier:@"ShowCustomLocationManger" sender:nil];
