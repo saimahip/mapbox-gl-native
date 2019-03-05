@@ -69,7 +69,6 @@ typedef NS_ENUM(NSInteger, MBXSettingsMiscellaneousRows) {
     MBXSettingsMiscellaneousToggleTwoMaps,
     MBXSettingsMiscellaneousLocalizeLabels, // TODO: Move to ios-sdk-examples
     MBXSettingsMiscellaneousShowSnapshots,
-    MBXSettingsMiscellaneousShouldLimitCameraChanges,
     MBXSettingsMiscellaneousShowCustomLocationManager,
     MBXSettingsMiscellaneousPrintLogFile,
     MBXSettingsMiscellaneousDeleteLogFile,
@@ -175,7 +174,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
 @property (nonatomic) BOOL reuseQueueStatsEnabled;
 @property (nonatomic) BOOL mapInfoHUDEnabled;
 @property (nonatomic) BOOL frameTimeGraphEnabled;
-@property (nonatomic) BOOL shouldLimitCameraChanges;
 @property (nonatomic) BOOL randomWalk;
 @property (nonatomic) NSMutableArray<UIWindow *> *helperWindows;
 
@@ -417,7 +415,7 @@ CLLocationCoordinate2D randomWorldCoordinate() {
             [settingsTitles addObjectsFromArray:@[
                 @"Add view annotations",
                 @"Add symbols",
-                @"Animate an Annotation View",
+                @"Animate an Annotation View", // TODO: Move to ios-sdk-examples
                 @"Remove Annotations",
                 @"Select an offscreen point annotation",
                 @"Center selected annotation",
@@ -438,7 +436,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
                 [NSString stringWithFormat:@"%@ Second Map", ([self.view viewWithTag:2] == nil ? @"Show" : @"Hide")],
                 [NSString stringWithFormat:@"Show Labels in %@", (_localizingLabels ? @"Default Language" : [[NSLocale currentLocale] displayNameForKey:NSLocaleIdentifier value:[self bestLanguageForUser]])],
                 @"Show Snapshots",
-                [NSString stringWithFormat:@"%@ Camera Changes", (_shouldLimitCameraChanges ? @"Unlimit" : @"Limit")],
                 @"View Route Simulation",
             ]];
 
@@ -520,7 +517,7 @@ CLLocationCoordinate2D randomWorldCoordinate() {
                 case MBXSettingsAddSymbols:
                     [self addMarkersWithType:MBXSettingsMarkerTypeSymbol];
                     break;
-                case MBXSettingsAnnotationAnimation:
+                case MBXSettingsAnnotationAnimation: // TODO: Move to ios-sdk-examples
                     [self animateAnnotationView];
                     break;
                 case MBXSettingsAnnotationsRemoveAnnotations:
@@ -593,14 +590,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
                 case MBXSettingsMiscellaneousShowCustomLocationManager:
                 {
                     [self performSegueWithIdentifier:@"ShowCustomLocationManger" sender:nil];
-                    break;
-                }
-                case MBXSettingsMiscellaneousShouldLimitCameraChanges:
-                {
-                    self.shouldLimitCameraChanges = !self.shouldLimitCameraChanges;
-                    if (self.shouldLimitCameraChanges) {
-                        [self.mapView setCenterCoordinate:CLLocationCoordinate2DMake(39.748947, -104.995882) zoomLevel:10 direction:0 animated:NO];
-                    }
                     break;
                 }
                 default:
@@ -1408,31 +1397,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
     // that a device with an English-language locale is already effectively
     // using locale-based country labels.
     _localizingLabels = [[self bestLanguageForUser] isEqualToString:@"en"];
-}
-
-- (BOOL)mapView:(MGLMapView *)mapView shouldChangeFromCamera:(MGLMapCamera *)oldCamera toCamera:(MGLMapCamera *)newCamera {
-    if (_shouldLimitCameraChanges) {
-        // Get the current camera to restore it after.
-        MGLMapCamera *currentCamera = mapView.camera;
-
-        // From the new camera obtain the center to test if it’s inside the boundaries.
-        CLLocationCoordinate2D newCameraCenter = newCamera.centerCoordinate;
-
-        // Set the map’s visible bounds to newCamera.
-        mapView.camera = newCamera;
-        MGLCoordinateBounds newVisibleCoordinates = mapView.visibleCoordinateBounds;
-
-        // Revert the camera.
-        mapView.camera = currentCamera;
-
-        // Test if the newCameraCenter and newVisibleCoordinates are inside Colorado.
-        BOOL inside = MGLCoordinateInCoordinateBounds(newCameraCenter, colorado);
-        BOOL intersects = MGLCoordinateInCoordinateBounds(newVisibleCoordinates.ne, colorado) && MGLCoordinateInCoordinateBounds(newVisibleCoordinates.sw, colorado);
-
-        return inside && intersects;
-    } else {
-        return YES;
-    }
 }
 
 - (void)mapViewRegionIsChanging:(MGLMapView *)mapView
