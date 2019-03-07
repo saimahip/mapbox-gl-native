@@ -1,5 +1,6 @@
 package com.mapbox.mapboxsdk.testapp.style
 
+import android.app.Activity
 import android.support.test.espresso.Espresso.onView
 import android.support.test.espresso.matcher.ViewMatchers.isRoot
 import com.mapbox.mapboxsdk.style.sources.CustomGeometrySource
@@ -42,9 +43,9 @@ class CustomGeometrySourceTest : BaseTest() {
     validateTestSetup()
     invoke(mapboxMap) { uiController, mapboxMap ->
       mapboxMap.style!!.removeLayer(ID_GRID_LAYER)
-      TestingAsyncUtils.waitForLayer(uiController, idlingResource.mapView)
+      TestingAsyncUtils.waitForLayer(uiController, mapView)
       mapboxMap.style!!.removeSource(ID_GRID_SOURCE)
-      TestingAsyncUtils.waitForLayer(uiController, idlingResource.mapView)
+      TestingAsyncUtils.waitForLayer(uiController, mapView)
       Assert.assertTrue("There should be no threads running when the source is removed.",
         Thread.getAllStackTraces().keys.filter {
           it.name.startsWith(CustomGeometrySource.THREAD_PREFIX)
@@ -58,12 +59,12 @@ class CustomGeometrySourceTest : BaseTest() {
     validateTestSetup()
     invoke(mapboxMap) { uiController, mapboxMap ->
       mapboxMap.style!!.removeLayer((rule.activity as GridSourceActivity).layer)
-      TestingAsyncUtils.waitForLayer(uiController, idlingResource.mapView)
+      TestingAsyncUtils.waitForLayer(uiController, mapView)
       mapboxMap.style!!.removeSource(ID_GRID_SOURCE)
-      TestingAsyncUtils.waitForLayer(uiController, idlingResource.mapView)
+      TestingAsyncUtils.waitForLayer(uiController, mapView)
       mapboxMap.style!!.addSource((rule.activity as GridSourceActivity).source)
       mapboxMap.style!!.addLayer((rule.activity as GridSourceActivity).layer)
-      TestingAsyncUtils.waitForLayer(uiController, idlingResource.mapView)
+      TestingAsyncUtils.waitForLayer(uiController, mapView)
       Assert.assertTrue("Threads should be restarted when the source is re-added to the map.",
         Thread.getAllStackTraces().keys.filter {
           it.name.startsWith(CustomGeometrySource.THREAD_PREFIX)

@@ -148,7 +148,7 @@ public class GeoJsonConversionTest extends EspressoTest {
         );
       mapboxMap.getStyle().addLayer(layer);
 
-      TestingAsyncUtils.INSTANCE.waitForLayer(uiController, idlingResource.getMapView());
+      TestingAsyncUtils.INSTANCE.waitForLayer(uiController, mapView);
 
       assertFalse(mapboxMap.queryRenderedFeatures(mapboxMap.getProjection().toScreenLocation(latLng)).isEmpty());
     }));

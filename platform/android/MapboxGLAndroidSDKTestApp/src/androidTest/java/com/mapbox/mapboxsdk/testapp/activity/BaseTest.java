@@ -1,75 +1,84 @@
 package com.mapbox.mapboxsdk.testapp.activity;
 
-import android.app.Activity;
-import android.support.test.espresso.Espresso;
-import android.support.test.espresso.IdlingRegistry;
-import android.support.test.espresso.IdlingResource;
-import android.support.test.espresso.IdlingResourceTimeoutException;
 import android.support.test.espresso.ViewInteraction;
 import android.support.test.rule.ActivityTestRule;
-
 import com.mapbox.mapboxsdk.Mapbox;
+import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
+import com.mapbox.mapboxsdk.maps.Style;
 import com.mapbox.mapboxsdk.testapp.R;
 import com.mapbox.mapboxsdk.testapp.action.MapboxMapAction;
 import com.mapbox.mapboxsdk.testapp.action.WaitAction;
-import com.mapbox.mapboxsdk.testapp.utils.FinishLoadingStyleIdlingResource;
-
-import com.mapbox.mapboxsdk.testapp.utils.MapboxIdlingResource;
-import junit.framework.Assert;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TestName;
-
 import timber.log.Timber;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
 import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static junit.framework.TestCase.assertNotNull;
+import static junit.framework.TestCase.assertTrue;
 
 /**
  * Base class for all Activity test hooking into an existing Activity that will load style.
  */
-public abstract class BaseTest {
+public abstract class BaseTest implements MapView.OnDidFinishLoadingStyleListener {
+
 
   @Rule
-  public ActivityTestRule<Activity> rule = new ActivityTestRule<>(getActivityClass());
+  public ActivityTestRule rule = new ActivityTestRule<>(getActivityClass());
 
   @Rule
-  public TestName testNameRule = new TestName();
+  public TestName testName = new TestName();
 
   protected MapboxMap mapboxMap;
-  protected MapboxIdlingResource idlingResource;
+  protected MapView mapView;
+
+  private CountDownLatch latch = new CountDownLatch(1);
+  private static int timeoutCount;
 
   @Before
   public void beforeTest() {
     try {
-      Timber.e(String.format(
-        "%s - %s - %s",
-        getClass().getSimpleName(),
-        testNameRule.getMethodName(),
-        "@Before test: register idle resource"
-      ));
-      idlingResource = (MapboxIdlingResource) generateIdlingResource();
-      IdlingRegistry.getInstance().register(idlingResource);
-      Espresso.onIdle();
-      mapboxMap = idlingResource.getMapboxMap();
-    } catch (IdlingResourceTimeoutException idlingResourceTimeoutException) {
-      throw new RuntimeException(
-        String.format(
-          "Could not start %s test for %s.",
-          testNameRule.getMethodName(),
-          getActivityClass().getSimpleName()
-        )
-      );
+      setupMap();
+      holdTestExecution();
+    } catch (Throwable throwable) {
+      throwable.printStackTrace();
     }
   }
 
-  protected IdlingResource generateIdlingResource() {
-    return new FinishLoadingStyleIdlingResource(rule.getActivity());
+  private void setupMap() throws Throwable {
+    rule.runOnUiThread(() -> {
+      mapView = rule.getActivity().findViewById(R.id.mapView);
+      mapView.addOnDidFinishLoadingStyleListener(this);
+      mapView.getMapAsync(this::initMap);
+    });
+  }
+
+  private void holdTestExecution() throws InterruptedException {
+    boolean success = latch.await(30, TimeUnit.SECONDS);
+    if (!success) {
+      Timber.e("Countdown latch timeout occurred for %s", testName.getMethodName());
+      timeoutCount++;
+    }
+  }
+
+  @Override
+  public void onDidFinishLoadingStyle() {
+    latch.countDown();
+  }
+
+  protected void initMap(MapboxMap mapboxMap) {
+    this.mapboxMap = mapboxMap;
+
+    Style style = mapboxMap.getStyle();
+    if (style != null && style.isFullyLoaded()) {
+      onDidFinishLoadingStyle();
+    }
   }
 
   protected void validateTestSetup() {
@@ -77,8 +86,11 @@ public abstract class BaseTest {
       Timber.e("Not connected to the internet while running test");
     }
 
-    checkViewIsDisplayed(R.id.mapView);
-    Assert.assertNotNull(mapboxMap);
+    assertTrue("Failing test suite, too many timeouts", timeoutCount < 2);
+    assertNotNull("MapView isn't initialised", mapView);
+    assertNotNull("MapboxMap isn't initialised", mapboxMap);
+    assertNotNull("Style isn't initialised", mapboxMap.getStyle());
+    assertTrue("Style isn't fully loaded", mapboxMap.getStyle().isFullyLoaded());
   }
 
   protected MapboxMap getMapboxMap() {
@@ -86,10 +98,6 @@ public abstract class BaseTest {
   }
 
   protected abstract Class getActivityClass();
-
-  protected void checkViewIsDisplayed(int id) {
-    onView(withId(id)).check(matches(isDisplayed()));
-  }
 
   protected void waitAction() {
     waitAction(500);
@@ -109,8 +117,7 @@ public abstract class BaseTest {
 
   @After
   public void afterTest() {
-    Timber.e(String.format("%s - %s", testNameRule.getMethodName(), "@After test: unregister idle resource"));
-    IdlingRegistry.getInstance().unregister(idlingResource);
+    mapView.removeOnDidFinishLoadingStyleListener(this);
   }
 }
 
