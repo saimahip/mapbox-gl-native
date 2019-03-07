@@ -1,6 +1,7 @@
 #include <benchmark/benchmark.h>
 
 #include <mbgl/map/map.hpp>
+#include <mbgl/map/map_options.hpp>
 #include <mbgl/gl/headless_frontend.hpp>
 #include <mbgl/renderer/renderer.hpp>
 #include <mbgl/style/style.hpp>
@@ -32,7 +33,8 @@ public:
     util::RunLoop loop;
     DefaultFileSource fileSource{ "benchmark/fixtures/api/cache.db", "." };
     HeadlessFrontend frontend { { 1000, 1000 }, 1, fileSource };
-    Map map { frontend, MapObserver::nullObserver(), frontend.getSize(), 1, fileSource, MapMode::Static};
+    Map map { frontend, MapObserver::nullObserver(), frontend.getSize(), 1,
+              fileSource, MapOptions().withMapMode(MapMode::Static) };
     ScreenBox box{{ 0, 0 }, { 1000, 1000 }};
 };
 

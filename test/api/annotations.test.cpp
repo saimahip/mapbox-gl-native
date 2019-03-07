@@ -5,6 +5,7 @@
 #include <mbgl/style/style.hpp>
 #include <mbgl/style/image.hpp>
 #include <mbgl/map/map.hpp>
+#include <mbgl/map/map_options.hpp>
 #include <mbgl/util/io.hpp>
 #include <mbgl/util/run_loop.hpp>
 #include <mbgl/util/color.hpp>
@@ -29,8 +30,9 @@ public:
     StubFileSource fileSource;
     float pixelRatio { 1 };
     HeadlessFrontend frontend { pixelRatio, fileSource };
+
     Map map { frontend, MapObserver::nullObserver(), frontend.getSize(), pixelRatio, fileSource,
-              MapMode::Static};
+              MapOptions().withMapMode(MapMode::Static)};
 
     void checkRendering(const char * name) {
         test::checkImage(std::string("test/fixtures/annotations/") + name,

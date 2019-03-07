@@ -1,4 +1,5 @@
 #include <mbgl/map/map.hpp>
+#include <mbgl/map/map_options.hpp>
 #include <mbgl/test/stub_file_source.hpp>
 #include <mbgl/test/util.hpp>
 #include <mbgl/util/image.hpp>
@@ -35,7 +36,7 @@ public:
     float pixelRatio { 1 };
     HeadlessFrontend frontend { pixelRatio, fileSource };
     Map map { frontend, MapObserver::nullObserver(), frontend.getSize(), pixelRatio, fileSource,
-              MapMode::Static};
+              MapOptions().withMapMode(MapMode::Static)};
 };
 
 std::vector<Feature> getTopClusterFeature(QueryTest& test) {

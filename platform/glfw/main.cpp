@@ -107,7 +107,7 @@ int main(int argc, char *argv[]) {
     }
 
     GLFWRendererFrontend rendererFrontend { std::make_unique<mbgl::Renderer>(backend, view->getPixelRatio(), fileSource), backend };
-    mbgl::Map map(rendererFrontend, backend, view->getSize(), view->getPixelRatio(), fileSource);
+    mbgl::Map map(rendererFrontend, backend, view->getSize(), view->getPixelRatio(), fileSource, mbgl::MapOptions());
 
     backend.setMap(&map);
 

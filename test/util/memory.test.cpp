@@ -3,6 +3,7 @@
 #include <mbgl/test/util.hpp>
 
 #include <mbgl/map/map.hpp>
+#include <mbgl/map/map_options.hpp>
 #include <mbgl/gl/headless_frontend.hpp>
 #include <mbgl/util/io.hpp>
 #include <mbgl/util/run_loop.hpp>
@@ -70,7 +71,7 @@ TEST(Memory, Vector) {
 
     HeadlessFrontend frontend { { 256, 256 }, ratio, test.fileSource };
     Map map(frontend, MapObserver::nullObserver(), frontend.getSize(), ratio, test.fileSource,
-            MapMode::Static);
+            MapOptions().withMapMode(MapMode::Static));
     map.jumpTo(CameraOptions().withZoom(16));
     map.getStyle().loadURL("mapbox://streets");
 
@@ -83,7 +84,7 @@ TEST(Memory, Raster) {
 
     HeadlessFrontend frontend { { 256, 256 }, ratio, test.fileSource };
     Map map(frontend, MapObserver::nullObserver(), frontend.getSize(), ratio, test.fileSource,
-            MapMode::Static);
+            MapOptions().withMapMode(MapMode::Static));
     map.getStyle().loadURL("mapbox://satellite");
 
     frontend.render(map);
@@ -120,7 +121,8 @@ TEST(Memory, Footprint) {
     public:
         FrontendAndMap(MemoryTest& test_, const char* style)
             : frontend(Size{ 256, 256 }, 2, test_.fileSource)
-            , map(frontend, MapObserver::nullObserver(), frontend.getSize(), 2, test_.fileSource, MapMode::Static) {
+            , map(frontend, MapObserver::nullObserver(), frontend.getSize(), 2, test_.fileSource,
+                  MapOptions().withMapMode(MapMode::Static)) {
             map.jumpTo(CameraOptions().withZoom(16));
             map.getStyle().loadURL(style);
             frontend.render(map);

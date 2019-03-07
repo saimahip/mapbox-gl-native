@@ -5,6 +5,7 @@
 #include <mbgl/test/fixture_log_observer.hpp>
 
 #include <mbgl/map/map.hpp>
+#include <mbgl/map/map_options.hpp>
 #include <mbgl/gl/context.hpp>
 #include <mbgl/gl/headless_frontend.hpp>
 #include <mbgl/storage/network_status.hpp>
@@ -36,7 +37,8 @@ public:
 
     MapTest(float pixelRatio = 1, MapMode mode = MapMode::Static)
         : frontend(pixelRatio, fileSource)
-        , map(frontend, observer, frontend.getSize(), pixelRatio, fileSource, mode) {
+        , map(frontend, observer, frontend.getSize(), pixelRatio,
+              fileSource, MapOptions().withMapMode(mode)) {
     }
 
     template <typename T = FileSource>
@@ -45,7 +47,8 @@ public:
             typename std::enable_if<std::is_same<T, DefaultFileSource>::value>::type* = 0)
             : fileSource { cachePath, assetRoot }
             , frontend(pixelRatio, fileSource)
-            , map(frontend, observer, frontend.getSize(), pixelRatio, fileSource, mode) {
+            , map(frontend, observer, frontend.getSize(), pixelRatio,
+                  fileSource, MapOptions().withMapMode(mode)) {
     }
 };
 
@@ -680,7 +683,8 @@ TEST(Map, TEST_DISABLED_ON_CI(ContinuousRendering)) {
         });
     };
 
-    Map map(frontend, observer, frontend.getSize(), pixelRatio, fileSource, MapMode::Continuous);
+    Map map(frontend, observer, frontend.getSize(), pixelRatio, fileSource,
+            MapOptions().withMapMode(MapMode::Continuous));
     map.getStyle().loadJSON(util::read_file("test/fixtures/api/water.json"));
 
     runLoop.run();

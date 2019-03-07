@@ -31,20 +31,17 @@ Map::Map(RendererFrontend& rendererFrontend,
          const Size size,
          const float pixelRatio,
          FileSource& fileSource,
-         MapMode mapMode,
-         ConstrainMode constrainMode,
-         ViewportMode viewportMode,
-         bool crossSourceCollisions)
+         const MapOptions& options)
     : impl(std::make_unique<Impl>(*this,
                                   rendererFrontend,
                                   mapObserver,
                                   fileSource,
                                   size,
                                   pixelRatio,
-                                  mapMode,
-                                  constrainMode,
-                                  viewportMode,
-                                  crossSourceCollisions)) {}
+                                  options.mapMode(),
+                                  options.constrainMode(),
+                                  options.viewportMode(),
+                                  options.crossSourceCollisions())) {}
 
 Map::~Map() = default;
 

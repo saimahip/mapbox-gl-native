@@ -3,6 +3,7 @@
 #include <mbgl/test/fixture_log_observer.hpp>
 
 #include <mbgl/map/map.hpp>
+#include <mbgl/map/map_options.hpp>
 #include <mbgl/renderer/backend_scope.hpp>
 #include <mbgl/gl/headless_frontend.hpp>
 #include <mbgl/storage/online_file_source.hpp>
@@ -25,7 +26,7 @@ TEST(API, RenderWithoutCallback) {
     HeadlessFrontend frontend { pixelRatio, fileSource };
 
     auto map = std::make_unique<Map>(frontend, MapObserver::nullObserver(), frontend.getSize(),
-                                     pixelRatio, fileSource, MapMode::Static);
+                                     pixelRatio, fileSource, MapOptions().withMapMode(MapMode::Static));
     map->renderStill(nullptr);
 
     // Force Map thread to join.
