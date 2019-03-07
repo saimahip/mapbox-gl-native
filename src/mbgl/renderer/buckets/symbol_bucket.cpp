@@ -3,6 +3,9 @@
 #include <mbgl/renderer/bucket_parameters.hpp>
 #include <mbgl/style/layers/symbol_layer_impl.hpp>
 #include <mbgl/text/glyph_atlas.hpp>
+#include <mbgl/style/expression/format_section_override.hpp>
+#include <mbgl/style/expression/format_expression.hpp>
+#include <mbgl/style/expression/formatted.hpp>
 
 namespace mbgl {
 
@@ -28,13 +31,17 @@ SymbolBucket::SymbolBucket(style::SymbolLayoutProperties::PossiblyEvaluated layo
       iconSizeBinder(SymbolSizeBinder::create(zoom, iconSize, IconSize::defaultValue())) {
 
     for (const auto& pair : paintProperties_) {
+        auto layerPaintProperties = pair.second;
+        if (hasPaintPropertyOverrides()) {
+            setPaintPropertyOverrides(layerPaintProperties);
+        }
         paintProperties.emplace(
             std::piecewise_construct,
             std::forward_as_tuple(pair.first),
             std::forward_as_tuple(PaintProperties {
-                pair.second,
-                { RenderSymbolLayer::iconPaintProperties(pair.second), zoom },
-                { RenderSymbolLayer::textPaintProperties(pair.second), zoom }
+                layerPaintProperties,
+                { RenderSymbolLayer::iconPaintProperties(layerPaintProperties), zoom },
+                { RenderSymbolLayer::textPaintProperties(layerPaintProperties), zoom }
             }));
     }
 }
@@ -224,6 +231,57 @@ void SymbolBucket::sortFeatures(const float angle) {
             addPlacedSymbol(icon.triangles, icon.placedSymbols[*symbolInstance.placedIconIndex]);
         }
     }
+}
+
+void SymbolBucket::updatePaintProperties(const std::string& layerID,
+                                         style::SymbolPaintProperties::PossiblyEvaluated updated) {
+    // TODO: Refactor when multiple properties are overridden, for example, TextOpacity + TextHaloColor.
+    //       Same applies for setPaintPropertyOverrides.
+    if (hasPaintPropertyOverrides()) {
+        auto& evaluated = paintProperties.at(layerID).evaluated;
+        auto textColor = evaluated.get<TextColor>();
+        evaluated = updated;
+        evaluated.get<TextColor>() = textColor;
+    } else {
+        paintProperties.at(layerID).evaluated = updated;
+    }
+}
+
+void SymbolBucket::setPaintPropertyOverrides(style::SymbolPaintProperties::PossiblyEvaluated& paint) {
+    // TODO: Generate TextColor::name name for SymbolLayer paint props.
+    auto override =
+            std::make_unique<expression::FormatSectionOveride<TextColor::Type>>(expression::type::Color,
+                                                                                std::move(paint.get<TextColor>()),
+                                                                                expression::kFormattedSectionTextColor);
+    PropertyExpression<TextColor::Type> expr(std::move(override));
+    paint.get<TextColor>() = PossiblyEvaluatedPropertyValue<Color>(std::move(expr));
+}
+
+bool SymbolBucket::hasPaintPropertyOverrides() {
+    if (!hasPaintPropertyOverrides_) {
+        hasPaintPropertyOverrides_= layout.get<TextField>().match(
+                [] (const TextField::Type& t) {
+                    for(const auto& section : t.sections) {
+                        if (section.textColor) {
+                            return true;
+                        }
+                    }
+                    return false;
+                },
+                [] (const PropertyExpression<TextField::Type>& t) {
+                    if (t.getExpression().getKind() == expression::Kind::FormatExpression) {
+                        const auto* e = static_cast<const expression::FormatExpression*>(&t.getExpression());
+                        for (const auto& section : e->getSections()) {
+                            if (section.textColor) {
+                                return true;
+                            }
+                        }
+                    }
+                    return false;
+                }
+         );
+    }
+    return *hasPaintPropertyOverrides_;
 }
 
 } // namespace mbgl

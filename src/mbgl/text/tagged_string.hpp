@@ -1,17 +1,23 @@
 #pragma once
 
-#include <mbgl/text/glyph.hpp>
 #include <mbgl/text/bidi.hpp>
+#include <mbgl/style/expression/formatted.hpp>
+#include <mbgl/util/font_stack.hpp>
 
 namespace mbgl {
 
 struct SectionOptions {
-    SectionOptions(double scale_, FontStackHash fontStackHash_)
-        : scale(scale_), fontStackHash(fontStackHash_)
+    SectionOptions(double scale_, FontStack fontStack_, optional<Color> textColor_ = nullopt)
+        : scale(scale_),
+          fontStackHash(FontStackHasher()(fontStack_)),
+          fontStack(std::move(fontStack_)),
+          textColor(std::move(textColor_))
     {}
     
     double scale;
     FontStackHash fontStackHash;
+    FontStack fontStack;
+    optional<Color> textColor;
 };
 
 /**
@@ -34,7 +40,7 @@ struct TaggedString {
 
     TaggedString(std::u16string text_, SectionOptions options)
         : styledText(std::move(text_),
-                     std::vector<uint8_t>(text_.size(), 0)) {
+                     std::vector<std::size_t>(text_.size(), 0)) {
         sections.push_back(std::move(options));
     }
     
@@ -71,7 +77,11 @@ struct TaggedString {
         return styledText;
     }
     
-    void addSection(const std::u16string& text, double scale, FontStackHash fontStack);
+    void addSection(const std::u16string& text,
+                    double scale,
+                    FontStack fontStack,
+                    optional<Color> textColor_ = nullopt);
+
     const SectionOptions& sectionAt(std::size_t index) const {
         return sections.at(index);
     }
@@ -80,7 +90,7 @@ struct TaggedString {
         return sections;
     }
     
-    uint8_t getSectionIndex(std::size_t characterIndex) const {
+    std::size_t getSectionIndex(std::size_t characterIndex) const {
         return styledText.second.at(characterIndex);
     }
     
@@ -88,7 +98,7 @@ struct TaggedString {
     void trim();
     
     void verticalizePunctuation();
-   
+
 private:
     StyledText styledText;
     std::vector<SectionOptions> sections;
