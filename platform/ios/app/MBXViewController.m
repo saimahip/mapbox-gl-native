@@ -192,30 +192,6 @@ CLLocationCoordinate2D randomWorldCoordinate() {
     self.mapView.experimental_enableFrameRateMeasurement = YES;
     self.hudLabel.titleLabel.font = [UIFont monospacedDigitSystemFontOfSize:10 weight:UIFontWeightRegular];
 
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Access Token" message:@"Enter your Mapbox access token to load Mapbox-hosted tiles and styles:" preferredStyle:UIAlertControllerStyleAlert];
-    [alertController addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField)
-     {
-         textField.keyboardType = UIKeyboardTypeURL;
-         textField.autocorrectionType = UITextAutocorrectionTypeNo;
-         textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
-     }];
-
-    [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
-    UIAlertAction *OKAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action)
-    {
-        UITextField *textField = alertController.textFields.firstObject;
-        NSString *accessToken = textField.text;
-        [[NSUserDefaults standardUserDefaults] setObject:accessToken forKey:MBXMapboxAccessTokenDefaultsKey];
-        [MGLAccountManager setAccessToken:accessToken];
-
-        self.styleIndex = -1;
-        [self.mapView reloadStyle:self];
-    }];
-    [alertController addAction:OKAction];
-    alertController.preferredAction = OKAction;
-
-    [self presentViewController:alertController animated:YES completion:nil];
-
     // Add fall-through single tap gesture recognizer. This will be called when
     // the map view's tap recognizers fail.
     UITapGestureRecognizer *singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];

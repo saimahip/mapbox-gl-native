@@ -2720,6 +2720,7 @@
 				DA1DC9471CB6C1C2006E619F /* Frameworks */,
 				DA1DC9481CB6C1C2006E619F /* Resources */,
 				DA4A269A1CB6F5D3000B7809 /* Embed Frameworks */,
+				072FAE4E2230A76900CC750D /* Insert Mapbox Access Token */,
 			);
 			buildRules = (
 			);
@@ -2993,6 +2994,28 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		072FAE4E2230A76900CC750D /* Insert Mapbox Access Token */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(TARGET_BUILD_DIR)/$(INFOPLIST_PATH)",
+			);
+			name = "Insert Mapbox Access Token";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "token_file=$SRCROOT/mapbox_access_token\n\n# First check the above path, then the user directory.\n# Ignore exit codes from `cat`.\ntoken=\"$(cat $token_file 2> /dev/null)\" || token=\"$(cat ~/.mapbox 2> /dev/null)\"\n\nif [ \"$token\" ]; then\nplutil -replace MGLMapboxAccessToken -string $token \"$TARGET_BUILD_DIR/$INFOPLIST_PATH\"\necho \"Token successfully inserted\"\nelse\necho 'error: Missing Mapbox access token'\necho \"error: Get an access token from <https://www.mapbox.com/studio/account/tokens/>, then create a new file at $token_file that contains the access token.\"\nexit 1\nfi\n\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		16376B031FFD9DAF0000563E /* Sources */ = {
